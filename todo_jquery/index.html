@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TODO LIST</title>
+  <link rel="stylesheet" href="app.css">
+  <script src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  <script src="https://use.fontawesome.com/e3ae05b8e6.js"></script>
+</head>
+
+<body>
+  <!-- タスクの入力フォーム -->
+  <main class="main">
+    <form class="form">
+      <div class="inputArea">
+        <input type="text" class="inputText js-get-val" value="" placeholder="ここにTODO内容を書く">
+        <span class="error js-toggle-error">入力が空です</span>
+      </div>
+      <button class="btn js-add-todo">TODOを追加</button>
+    </form>
+
+    <!-- 検索ボックス -->
+    <div class="searchBox">
+      <!-- fontawesomeで虫眼鏡アイコンを表示 -->
+      <i class="fa fa-search searchBox__icon" aria-hidden="true"></i>
+      <!-- placeholderに説明を表示 -->
+      <input type="text" class="searchBox__input js-search" value="" placeholder="ここに絞り込みたいキーワードを入力する">
+    </div>
+
+    <!-- タスクの一覧表示 -->
+    <ul class="list js-todo_list">
+      <!-- 未完了のタスク -->
+      <li class="list__item js-todo_list-item" data-text="サンプルTODOタスク">
+        <!-- チェック前のアイコン -->
+        <i class="fa fa-square-o icon-check js-click-to-done" aria-hidden="true"></i>
+        <span class="js-todo_list-text">サンプルTODOタスク</span>
+        <input type="text" class="editText js-todo_list-editForm" value="サンプルTODOタスク">
+        <!-- ゴミ箱アイコン -->
+        <i class="fa fa-trash icon-trash js-click-trash" aria-hidden="true"></i>
+      </li>
+
+      <!-- 完了のタスク -->
+      <li class="list__item list__item--done js-todo_list-item" data-text="サンプルDoneタスク">
+        <!-- チェック済みアイコン -->
+        <i class="fa fa-check-square icon-check js-click-to-todo" aria-hidden="true"></i>
+        <span class="js-todo_list-text">サンプルDoneタスク</span>
+        <!-- _は言葉としてつながっているもの（todo_list)、-は別の単語(-text) -->
+        <input type="text" class="editText js-todo_list-editForm" value="サンプルDoneタスク">
+        <!-- ゴミ箱アイコン -->
+        <i class="fa fa-trash icon-trash js-click-trash" aria-hidden="true"></i>
+      </li>
+    </ul>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
