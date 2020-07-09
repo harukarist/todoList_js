@@ -220,7 +220,7 @@ $('.js-search').on('keyup', function () {
       // 一致したらtrueを返してループを回す
       return true;
     }
-    // 一致しなかったらhide()でエレメントを削除する
+    // 一致しなかったらhide()でエレメントを非表示にする
     $(elm).hide();
   });
 
