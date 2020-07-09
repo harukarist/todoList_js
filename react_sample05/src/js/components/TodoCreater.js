@@ -39,7 +39,7 @@ export default class TodoCreator extends React.Component {
       // 入力された値が空だった場合はエラーメッセージをセット
       if (!val) {
         this.setState({
-          errMsg: '入力が空です'
+          errMsg: '入力されていません'
         });
         return; // returnすると、以降の処理は行わない
 
@@ -58,7 +58,7 @@ export default class TodoCreator extends React.Component {
   // renderメソッド 画面表示用html
   render() {
     // エラーメッセージが空でない場合、spanタグを生成してエラーメッセージを表示、空の場合は空文字
-    const errMsg = (this.state.errMsg) ? <span className="error">{this.state.errMsg}</span> : '';
+    const errMsgTag = (this.state.errMsg) ? <span className="error">{this.state.errMsg}</span> : '';
     // 入力フォームのhtmlを返却
     return (
       // 入力内容を画面に表示するにはonChangeをつけてthis.handleChangeを呼び、this.setState()を実行
@@ -67,10 +67,9 @@ export default class TodoCreator extends React.Component {
         <div className="inputArea">
           <input type="text" className="inputText" value={this.state.val}
             onChange={this.handleChange} onKeyUp={this.handleKeyUp} placeholder="ToDoを入力して[Shift+Enter]" />
-          {errMsg}
+          {errMsgTag}
         </div>
       </div>
-      // 宿題TODO {errMsg}でエラーメッセージを表示
     );
   }
 }
