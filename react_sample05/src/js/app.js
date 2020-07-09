@@ -31,11 +31,13 @@ class TodoApp extends React.Component {
       data: [
         {
           id: this.createHashId(),
-          text: 'sample todo1'
+          text: 'sample todo1',
+          isDone: false
         },
         {
           id: this.createHashId(),
-          text: 'sample todo2'
+          text: 'sample todo2',
+          isDone: false
         }
       ],
       searchText: ''  //絞り込むキーワード
@@ -133,6 +135,7 @@ class TodoApp extends React.Component {
 
     // ただし、検索して戻すとdone状態が外れてしまう
     // 【宿題TODO】検索した後もdoneのままになるようにする
+    // ⇒実装済み：isDoneをapp.js側のstateに持たせて、Task.js側のstateは isDone: this.props.isDone, に変更。
 
     return (
       // JSXの書き方では何らかのタグで囲む必要があるためdivタグで囲む

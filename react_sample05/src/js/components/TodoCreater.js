@@ -14,7 +14,6 @@ export default class TodoCreator extends React.Component {
       val: '',　//入力したタスク
       errMsg: '' //エラーメッセージ
       // エラーフラグ isError: false を追加してもgood
-
     };
     // bind(this)でメソッドを縛る
     this.handleChange = this.handleChange.bind(this);

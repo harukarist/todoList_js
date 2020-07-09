@@ -563,10 +563,12 @@ var TodoApp = function (_React$Component) {
     _this.state = {
       data: [{
         id: _this.createHashId(),
-        text: 'sample todo1'
+        text: 'sample todo1',
+        isDone: false
       }, {
         id: _this.createHashId(),
-        text: 'sample todo2'
+        text: 'sample todo2',
+        isDone: false
       }],
       searchText: '' //絞り込むキーワード
     };
@@ -591,6 +593,8 @@ var TodoApp = function (_React$Component) {
 
       // cryptoモジュールを利用する方法
       // require("crypto").randomBytes(10).toString("base64");
+
+      // uuidプラグインを使う方法
     }
 
     // Searchコンポーネントから呼ばれる
@@ -29481,7 +29485,7 @@ var Task = function (_React$Component) {
     _this.state = {
       id: _this.props.id, // コンポーネント自体のID
       text: _this.props.text, //タスク名
-      isDone: false,
+      isDone: _this.props.isDone,
       editMode: false
     };
     // イベントハンドラ（thisで縛る）
@@ -29581,7 +29585,7 @@ var Task = function (_React$Component) {
       });
 
       // underscoreのようなif文は使えないので、変数に前もって入れておく（returnの中ではif文が書けない）
-      var input = this.state.editMode ?
+      var inputTag = this.state.editMode ?
       // editModeの場合
       _react2.default.createElement('input', { type: 'text', className: 'editText', value: this.state.text,
         onChange: this.handleChangeText, onKeyUp: this.handleKeyUpCloseEdit }) :
@@ -29597,13 +29601,13 @@ var Task = function (_React$Component) {
         // JSXの書き方
         // 上記で定義した変数classNameLiをliタグのクラス名、変数classNameIconをiタグのクラス名に入れる
         // チェックボックスがクリックされたら this.handleClickToggleDone()を呼び出してisDoneを反転
-        // {input}でタスク名を表示
+        // 上記で指定した{inputTag}でタスク名を表示
         // ゴミ箱アイコンをクリックしたらthis.handleClickRemove()を呼び出し
         _react2.default.createElement(
           'li',
           { className: classNameLi },
           _react2.default.createElement('i', { className: classNameIcon, onClick: this.handleClickToggleDone, 'aria-hidden': 'true' }),
-          input,
+          inputTag,
           _react2.default.createElement('i', { className: 'fa fa-trash icon-trash', onClick: this.handleClickRemove, 'aria-hidden': 'true' })
         )
       );
@@ -29718,7 +29722,6 @@ var TodoCreator = function (_React$Component) {
       val: '', //入力したタスク
       errMsg: '' //エラーメッセージ
       // エラーフラグ isError: false を追加してもgood
-
     };
     // bind(this)でメソッドを縛る
     _this.handleChange = _this.handleChange.bind(_this);

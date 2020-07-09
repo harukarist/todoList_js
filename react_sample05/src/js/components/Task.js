@@ -14,7 +14,7 @@ export default class Task extends React.Component {
     this.state = {
       id: this.props.id, // コンポーネント自体のID
       text: this.props.text, //タスク名
-      isDone: false,
+      isDone: this.props.isDone,
       editMode: false
     };
     // イベントハンドラ（thisで縛る）
@@ -60,7 +60,7 @@ export default class Task extends React.Component {
   }
   // 編集ボックスがkeyupされた時
   handleKeyUpCloseEdit(e) {
-    if(e.keyCode === 13 && e.shiftKey === true){
+    if (e.keyCode === 13 && e.shiftKey === true) {
       this.setState({
         text: e.currentTarget.value,
         editMode: false
@@ -69,7 +69,7 @@ export default class Task extends React.Component {
   }
   // タスクを削除した時（コンポーネントが破棄される）
   // componentWillUnmount() {
-  componentWillUnmountWillMount(){
+  componentWillUnmountWillMount() {
     console.log('componentWillUnmountWillMount');
   }
 
@@ -91,23 +91,23 @@ export default class Task extends React.Component {
     });
 
     // underscoreのようなif文は使えないので、変数に前もって入れておく（returnの中ではif文が書けない）
-    const input = (this.state.editMode) ?
+    const inputTag = (this.state.editMode) ?
       // editModeの場合
       <input type="text" className="editText" value={this.state.text}
-             onChange={this.handleChangeText} onKeyUp={this.handleKeyUpCloseEdit}/> :
-    // そうでない場合
-    <span onClick={this.handleClickshowEdit}>{this.state.text}</span>;
+        onChange={this.handleChangeText} onKeyUp={this.handleKeyUpCloseEdit} /> :
+      // そうでない場合
+      <span onClick={this.handleClickshowEdit}>{this.state.text}</span>;
 
     // returnでhtmlを吐き出す
     return (
       // JSXの書き方
       // 上記で定義した変数classNameLiをliタグのクラス名、変数classNameIconをiタグのクラス名に入れる
       // チェックボックスがクリックされたら this.handleClickToggleDone()を呼び出してisDoneを反転
-      // {input}でタスク名を表示
+      // 上記で指定した{inputTag}でタスク名を表示
       // ゴミ箱アイコンをクリックしたらthis.handleClickRemove()を呼び出し
       <li className={classNameLi}>
         <i className={classNameIcon} onClick={this.handleClickToggleDone} aria-hidden="true" />
-        {input}
+        {inputTag}
         <i className="fa fa-trash icon-trash" onClick={this.handleClickRemove} aria-hidden="true" />
       </li>
     );
