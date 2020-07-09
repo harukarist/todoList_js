@@ -1,0 +1,26 @@
+body{
+  background: #f6f5f4;
+  color: #333;
+}
+.main{
+  width: 400px;
+  margin: 100px auto;
+  background: #fff;
+  padding: 15px;
+  text-align: center;
+}
+.btn{
+  cursor: pointer;
+  background: #4FC0E8;
+  padding: 5px 15px;
+  border: none;
+  color: #fff;
+}
+.btn__num{
+  background: #fff;
+  border-radius: 2px;
+  color: #333;
+  padding: 0 5px;
+  display: inline-block;
+  margin-right: 5px;
+}

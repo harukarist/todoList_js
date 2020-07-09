@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>backbone sample02</title>
+  <!-- ライブラリbackbone,jQuery,underscoreはpackage.jsonでインストール -->
+  <link rel="stylesheet" href="dist/app.css">
+</head>
+<body>
+
+  <div class="main" id="app">
+  </div>
+
+  <!-- jsのテンプレート -->
+  <script type="text/template" id="template1">
+    <button class="btn js-click-like"><span class="btn__num"><%=like%></span>いいね！</button>
+    <h1 class="name"><%= name %></h1>
+    <p class="text"><%= text %></p>
+  </script>
+  <!-- 変数like,name,textに値が入る -->
+
+<script src="dist/bundle.js"></script>
+</body>
+</html>
