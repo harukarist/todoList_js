@@ -293,118 +293,75 @@ var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_vue2.default.config.devtools = true;
+//=======================================
+// Vue.jsの特徴
+//=======================================
 
-// v-if,v-else-if,v-else
-new _vue2.default({
-  el: '#app1',
-  data: {
-    isShow: 'a'
+// 1. ドキュメントが日本語で整理されていて見やすい
+// 2. React.jsよりも高速
+// 3. 双方向データバインディングで、書くコードが少なくなる
+// 4. 細かなアニメーションにも対応
+
+// Vueの基本の書き方
+// newして使う
+new _vue2.default({ // Vueインスタンス生成
+  el: '#app1', // elでスコープを指定（backboneと同じ）セレクタの形で指定
+  data: { // dataの中にプロパティを定義しておけば、vueの中で保持して使いまわせる。今回はテンプレートに表示している。
+    message: 'vueのテンプレートの構文。{{}}で囲って処理が書ける。'
+    // elに指定したセレクタ'#app1'のスコープの中で、dataのプロパティmessageが使える。
   }
 });
 
-// v-showとv-ifの違い
-// v-show による要素は常に描画されて DOM に維持する。
-// v-show はシンプルに要素の display CSS プロパティを切り替える。
+// v-bindを使った属性のバインド
+// v-bindは:という省略記号で書ける
+// Vueを読み込む
 new _vue2.default({
   el: '#app2',
   data: {
-    isShow: true
+    message: 'このページをロードしたのは ' + new Date().toLocaleString(),
+    classObject: {
+      active: true,
+      'text-danger': false
+    }
   }
 });
 
-// 算出プロパティ「computed」はdataの変更を監視して、自動で実行される
-// 常に結果がキャッシュされていて、this.isShowが変更されていない限り、何度呼び出しても前の結果が返ってくる
-// methodsは自分で毎回実行の度に再計算される
+// v-ifで条件分岐と表示・非表示切り替え
 new _vue2.default({
   el: '#app3',
   data: {
     isShow: true
-  },
-  computed: {
-    showString: function showString() {
-      return this.isShow ? Date.now() : 'isShowはfalseです';
-    },
-    showString2: function showString2() {
-      return Date.now();
-    }
-  },
-  methods: {
-    showStringMethods: function showStringMethods() {
-      return this.isShow ? Date.now() : 'isShowはfalseです';
-    },
-    showStringMethods2: function showStringMethods2() {
-      return Date.now();
-    }
   }
 });
 
-// v-htmlでサニタイズを無効化
+// v-forでループ
 new _vue2.default({
   el: '#app4',
   data: {
-    script: '<p style="color:red">タグとして表示されます</p>'
+    todos: [{ text: 'v-forを使うと' }, { text: 'こうやってデータやhtmlをループして' }, { text: '生成できる' }]
   }
 });
 
-// トランジションとアニメーション
+// v-onを使ってユーザーからのイベントを発火させる
+// v-onは@という省略記号で書ける
+new _vue2.default({
+  el: '#app5',
+  data: {
+    message: 'Hello Vue.js!'
+  },
+  methods: {
+    changeMessage: function changeMessage() {
+      this.message = this.message + 'を変えちゃった！';
+      // jQueryのように「書き換え先のDOMを取得する」「値を取得する」「DOMを書き換える」というコードを書く必要がなくなる！
+    }
+  }
+});
+
+// v-modelで双方向データバインディング
 new _vue2.default({
   el: '#app6',
   data: {
-    show: true
-  }
-});
-
-// コンポーネントの使い方
-_vue2.default.component('button-counter', {
-  // コンポーネントで使う場合のdataは必ず関数にすること！通常のオブジェクト形式だと全コンポーネントでdataが共有されてしまう
-  data: function data() {
-    return {
-      count: 0
-    };
-  },
-  // v-on:click でクリックイベント
-  // クリックしたときにcountの数値を1ふやす
-  template: '<button v-on:click="count++">You clicked me {{ count }} times.</button>'
-});
-new _vue2.default({ el: '#app7' });
-
-// propsの使い方
-_vue2.default.component('blog-post', {
-  props: ['title'],
-  template: '<h3>{{ title }}</h3>'
-});
-new _vue2.default({ el: '#app8' });
-
-// イベントとメッセージを親コンポーネントに渡す方法
-_vue2.default.component('blog-post', {
-  props: ['post'],
-  // ヒアドキュメント（改行しても1つのデータとしてtemplateに登録できる）
-  template: '\n    <div class="blog-post">\n      <h3>{{ post.title }}</h3>\n      // $emit()\u3067\u30AB\u30B9\u30BF\u30E0\u30A4\u30D9\u30F3\u30C8\'enlarge-text\'\u3092\u4F5C\u3063\u3066\u89AA\u306B\u901A\u77E5\u3059\u308B\uFF08\u30E1\u30C3\u30BB\u30FC\u30B8\u3092\u6E21\u3059\uFF09\n      <button v-on:click="$emit(\'enlarge-text\')">\n        Enlarge text\n      </button>\n      <div v-html="post.content"></div>\n    </div>\n  '
-});
-new _vue2.default({
-  el: '#app9',
-  data: {
-    posts: [{
-      id: 1,
-      title: 'sample post1',
-      content: '<p>サンプル投稿のコンテント</p>'
-    }, {
-      id: 2,
-      title: 'sample post2',
-      content: '<p>サンプル投稿のコンテント</p>'
-    }, {
-      id: 3,
-      title: 'sample post3',
-      content: '<p>サンプル投稿のコンテント</p>'
-    }],
-    postFontSize: 1
-  },
-  methods: {
-    fontSizeScale: function fontSizeScale() {
-      // 0.1ずつインクリメント
-      this.postFontSize += 0.1;
-    }
+    message: 'これが、双方向データバインディング' // 入力された内容が自動でデータへ更新され、データが更新されると自動で出力内容も変わる。
   }
 });
 

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TodoList with jQuery</title>
+  <link rel="stylesheet" href="app.css">
+  <!-- fontawesome -->
+  <script src="https://kit.fontawesome.com/f2d7c28546.js" crossorigin="anonymous"></script>
+  <!-- jQuery -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <!-- jQuery UI -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/smoothness/jquery-ui.css">
+
+</head>
+
+<body>
+  <main class="main">
+    <div class="heading">
+      <h1 class="heading__mainTitle">Todo List</h1>
+      <h2 class="heading__subTitle">with jQuery</h2>
+    </div>
+
+    <div class="formArea">
+      <div class="entryBox">
+        <input type="text" class="entryBox__input js-form-val" value="" placeholder="タスクを入力">
+        <!-- 送信ボタン -->
+        <i class="far fa-paper-plane entryBox__btn js-add-todo" aria-hidden="true"></i>
+      </div>
+      <span class="formArea__error js-toggle-error">タスクを入力してください</span>
+    </div>
+
+    <div class="searchBox">
+      <input type="text" class="searchBox__input js-searchTasks" value="" placeholder="Search...">
+      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+    </div>
+
+    <ul class="todoList js-todoList-must js-sortable"></ul>
+
+    <ul class="todoList js-todoList-normal js-sortable">
+      <li class="todoList__item js-todoList-item" data-task-name="タスクサンプル">
+        <i class="far fa-square icon-checkbox js-click-to-done" aria-hidden="true"></i>
+        <span class="todoList__taskName js-todoList-taskName">タスクサンプル</span>
+        <input type="text" class="todoList__editBox js-todoList-editName" value="タスクサンプル">
+        <i class="far fa-star icon-star js-click-to-must" aria-hidden="true"></i>
+        <i class="fas fa-trash-alt icon-trash js-click-to-remove" aria-hidden="true"></i>
+      </li>
+
+      <li class="todoList__item todoList__item--done js-todoList-item" data-task-name="完了タスクサンプル">
+        <i class="far fa-check-square icon-checkbox js-click-to-todo" aria-hidden="true"></i>
+        <span class="todoList__taskName js-todoList-taskName">完了タスクサンプル</span>
+        <input type="text" class="todoList__editBox js-todoList-editName" value="完了タスクサンプル">
+        <i class="far fa-star icon-star js-click-to-must" aria-hidden="true"></i>
+        <i class="fas fa-trash-alt icon-trash js-click-to-remove" aria-hidden="true"></i>
+      </li>
+    </ul>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+
+</html>

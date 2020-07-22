@@ -12,8 +12,7 @@ module.exports = {
         test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
-        query: {
-          // presets: ['es2015']
+        query:{
           presets: ['env']
         }
       }
@@ -23,7 +22,10 @@ module.exports = {
     modules: [path.join(__dirname, 'src'), 'node_modules'],
     extensions: ['.js'],
     alias: {
-      vue: 'vue/dist/vue.esm.js' // npm install したvueはtemplete機能のないランタイム限定ビルドなので、こっちを使うようエイリアスをはる
+      // npm install したvue(node_modules/vue/dist/vue.js) は
+      // templete機能のないランタイム限定ビルドなので、
+      // 以下のファイルを使うようエイリアスを張る
+      vue: 'vue/dist/vue.esm.js' 
     }
   }
 };

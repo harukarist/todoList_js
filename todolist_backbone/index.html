@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TodoList with Backbone.js</title>
+  <link rel="stylesheet" href="dist/app.css">
+  <!-- fontawesome -->
+  <script src="https://kit.fontawesome.com/f2d7c28546.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="main" id="app">
+    <div class="heading">
+      <h1 class="heading__mainTitle">Todo List</h1>
+      <h2 class="heading__subTitle">with Backbone.js</h2>
+    </div>
+
+    <!-- 入力フォーム -->
+    <div class="formArea js-form">
+      <!-- テンプレートが入る（下記） -->
+    </div>
+
+
+    <!-- 検索ボックス -->
+    <div class="searchBox js-searchBox">
+    </div>
+
+    <!-- ToDoリスト -->
+    <div class="js-todoList">
+      <ul class="todoList js-todoList-must js-sortable"></ul>
+      <ul class="todoList js-todoList-normal js-sortable"></ul>
+    </div>
+
+    <!-- タスクのテンプレート -->
+    <script type="text/template" id="template-list-item">
+    <% if (!isHide){ %>
+      <!-- isMustの場合・isDoneの場合はクラス名を追加 -->
+      <li class="todoList__item js-todoList-item <% if (isMust){ %>todoList__item--must<% } %> <% if (isDone){ %>todoList__item--done<% } %>">
+        <!-- isDoneの場合とそうでない場合でチェックボックスのクラス名を切り替え -->
+        <i class="far <% if (isDone){ %>fa-check-square<% }else{ %>fa-square<% } %> icon-checkbox js-toggle-done" aria-hidden="true"></i>
+        <!-- 編集モードの場合とそうでない時で表示を切り替え -->
+        <% if (!editMode){ %>
+          <span class="todoList__taskName js-todoList-taskName"><%= taskName %></span>
+        <% }else{ %>
+          <input type="text" class="todoList__editBox js-todoList-editName" value="<%= taskName %>">
+        <% } %>
+        <!-- スターアイコン -->
+        <i class="<% if (isMust) { %>fas<% }else{ %>far<% } %> fa-star icon-star js-toggle-must" aria-hidden="true"></i>
+        <!-- ゴミ箱アイコン -->
+        <i class="fas fa-trash-alt icon-trash js-click-to-remove" aria-hidden="true"></i>
+      </li>
+    <% } %>
+    </script>
+
+    <!-- 入力フォームのテンプレート -->
+    <script type="text/template" id="template-form">
+      <div class="entryBox">
+        <input type="text" class="entryBox__input js-form-val" value="" placeholder="タスクを入力">
+        <!-- 送信ボタン -->
+        <i class="far fa-paper-plane entryBox__btn js-add-todo" aria-hidden="true"></i>
+      </div>
+      <!-- エラーメッセージ -->
+      <% if(hasError){ %>
+        <span class="formArea__is-error"><%= errorMsg %></span>
+      <% }else{ %>
+        <span class="formArea__no-error"></span>
+      <% } %>
+    </script>
+
+
+    <!-- 検索エリアのテンプレート -->
+    <script type="text/template" id="template-search">
+      <input type="text" class="searchBox__input js-searchTasks" value="" placeholder="Search...">
+      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+    </script>
+
+  </div>
+
+  <script src="dist/bundle.js"></script>
+</body>
+
+</html>

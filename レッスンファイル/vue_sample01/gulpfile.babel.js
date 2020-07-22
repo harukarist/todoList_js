@@ -65,10 +65,3 @@ gulp.task('default', gulp.series(gulp.parallel('eslint', 'build', 'browser-sync'
   gulp.watch("./dist/**/*.+(js|css)", gulp.task('bs-reload'));
   gulp.watch("./src/**/*.js", gulp.task('eslint'));
 }));
-
-// gulp.task('default', ['eslint', 'build', 'browser-sync'], function(){
-//   gulp.watch('./src/**/*.js', ['build']);
-//   gulp.watch("./*.html", ['bs-reload']);
-//   gulp.watch("./dist/**/*.+(js|css)", ['bs-reload']);
-//   gulp.watch("./src/**/*.js", ['eslint']);
-// });

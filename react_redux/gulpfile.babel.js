@@ -11,6 +11,7 @@ import eslint from 'gulp-eslint';
 // chromeのreact-dev-toolをインストールしておくといい
 // https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi/related
 
+
 // gulpタスクの作成
 gulp.task('build', function () {
   gulp.src('src/js/app.js')
@@ -33,9 +34,7 @@ gulp.task('bs-reload', function () {
 });
 gulp.task('eslint', function () {
   return gulp.src(['src/**/*.js']) // lint のチェック先を指定
-    //plumberをpipeで渡す
     .pipe(plumber({
-      // errorHandlerプロパティにfunctionで処理を渡す
       // エラーをハンドル
       errorHandler: function (error) {
         const taskName = 'eslint';
@@ -51,24 +50,25 @@ gulp.task('eslint', function () {
         });
       }
     }))
-    .pipe(eslint({ useEslintrc: true })) // 設定ファイル .eslintrc を参照する
-    // お決まりパターン
+    .pipe(eslint({ useEslintrc: true })) // .eslintrc を参照
     .pipe(eslint.format())
     .pipe(eslint.failOnError())
     .pipe(plumber.stop());
 });
 
+
 // Gulpを使ったファイルの監視
-gulp.task('default', gulp.series(gulp.parallel('eslint', 'build', 'browser-sync'), function () {
+gulp.task('default', gulp.series(gulp.parallel('build', 'browser-sync'), function () {
   gulp.watch('./src/**/*.js', gulp.task('build'));
-  gulp.watch("./*.html", gulp.task('bs-reload'));
-  gulp.watch("./dist/**/*.+(js|css)", gulp.task('bs-reload'));
-  gulp.watch("./src/**/*.js", gulp.task('eslint'));
+  gulp.watch('./*.html', gulp.task('bs-reload'));
+  gulp.watch('./dist/**/*.+(js|css)', gulp.task('bs-reload'));
+  gulp.watch('./src/**/*.js', gulp.task('eslint'));
 }));
 
-// gulp.task('default', ['eslint', 'build', 'browser-sync'], function(){
-//   gulp.watch('./src/**/*.js', ['build']);
+// gulp.task('default', ['build', 'browser-sync'], function(){
+//   gulp.watch('./src/*/*.js', ['build']);
+//   gulp.watch('./src/*/*/*.js', ['build']);
 //   gulp.watch("./*.html", ['bs-reload']);
-//   gulp.watch("./dist/**/*.+(js|css)", ['bs-reload']);
-//   gulp.watch("./src/**/*.js", ['eslint']);
+//   gulp.watch("./dist/*/*.+(js|css)", ['bs-reload']);
+//   gulp.watch("./dist/*/*/*.+(js|css)", ['bs-reload']);
 // });

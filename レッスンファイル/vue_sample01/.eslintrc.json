@@ -1,7 +1,7 @@
 {
   "extends": [
+    "eslint:recommended" // react書く用のおすすめの設定にしてくれるプラグインを読み込む
     // "plugin:recommended" // react書く用のおすすめの設定にしてくれるプラグインを読み込む
-    "eslint:recommended"
   ],
   "parserOptions": {
     "sourceType": "module" // import/exportを使うため
