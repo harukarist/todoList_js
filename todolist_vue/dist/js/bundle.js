@@ -287,29 +287,76 @@ process.umask = function() { return 0; };
 "use strict";
 
 
+var _methods;
+
 var _vue = __webpack_require__(3);
 
 var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// import TaskList from './TaskList'
+function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
-_vue2.default.config.devtools = true;
+_vue2.default.component('todoCreator', {
+  props: ['createprops'],
+  data: function data() {
+    return {
+      inputVal: '',
+      errMsg: ''
+    };
+  },
+  template: '\n    <div class="formArea">\n      <div class="entryBox">\n        <input type="text" class="entryBox__input" value="" v-model="inputVal" placeholder="\u30BF\u30B9\u30AF\u3092\u5165\u529B\u3059\u308B" @keydown.enter="keyDownAddTask">\n        <i class="far fa-paper-plane entryBox__btn" @click="clickAddTask" aria-hidden="true"></i>\n      </div>\n      <span class="formArea__is-error">{{ errMsg }}</span>\n    </div>\n  ',
+  methods: {
+    createHashId: function createHashId() {
+      return Math.random().toString(36).slice(-16);
+    },
+    keyDownAddTask: function keyDownAddTask(e) {
+      // this.inputVal = e.target.value;
+      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
+      if (e.keyCode === 13 && this.inputVal !== '') {
+        this.addTask(this.inputVal);
+        this.inputVal = '';
+        this.errMsg = '';
+      }
+    },
+    clickAddTask: function clickAddTask(e) {
+      // let text = e.target.value;
+      var text = this.inputVal;
+      if (!text) {
+        console.log('err');
+        this.errMsg = 'タスクを入力してください';
+      } else {
+        console.log('text', text);
+        this.errMsg = '';
+        console.log(this.errMsg);
+        this.addTask(text);
+        this.inputVal = '';
+      }
+    },
+    addTask: function addTask(text) {
+      this.createprops.push({
+        id: this.createHashId(),
+        taskName: text
+      });
+      console.log('createprops', this.createprops);
+    }
+  }
+});
 
+// ------------------------------------------------
 // イベントとメッセージを親コンポーネントに渡す
 _vue2.default.component('taskcomp', {
   props: ['taskprops'],
   data: function data() {
     return {
+      isEdit: false,
       taskName: this.taskprops.taskName,
       isDone: this.taskprops.isDone,
       isMust: this.taskprops.isMust
     };
   },
-
   // ヒアドキュメント（改行しても1つのデータとしてtemplateに登録できる）
-  template: '<li :class="classTaskItem">\n    <!-- \u30C1\u30A7\u30C3\u30AF\u30DC\u30C3\u30AF\u30B9 -->\n    <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>\n    <!-- \u30BF\u30B9\u30AF\u540D\u8868\u793A -->\n    <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ taskName }}</span>\n    <input v-show="isEdit" type="text" class="todoList__editBox" :value="taskName" @change="changeName" @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">\n    <!-- \u30B9\u30BF\u30FC\u30A2\u30A4\u30B3\u30F3 -->\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>\n    <!-- \u30B4\u30DF\u7BB1\u30A2\u30A4\u30B3\u30F3 -->\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>\n  </li>',
+  template: '\n  <li :class="classTaskItem">\n  <!--\u30C1\u30A7\u30C3\u30AF\u30DC\u30C3\u30AF\u30B9 -->\n  <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>\n  <!--\u30BF\u30B9\u30AF\u540D\u8868\u793A -->\n  <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName"> {{ taskprops.taskName }}</span>\n  <input v-show="isEdit" type="text" class="todoList__editBox" :value="taskprops.taskName" @change="changeName" @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">\n  <!--\u30B9\u30BF\u30FC\u30A2\u30A4\u30B3\u30F3 -->\n  <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n  <!--\u30B4\u30DF\u7BB1\u30A2\u30A4\u30B3\u30F3 -->\n  <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>\n  </li>\n  ',
 
   computed: {
     classTaskItem: function classTaskItem() {
@@ -337,10 +384,10 @@ _vue2.default.component('taskcomp', {
     }
   },
   methods: {
-    // toggleDone() {
-    toggleDone: function toggleDone() {
+    toggleDone: function toggleDone(task) {
       this.isDone = !this.isDone;
     },
+
 
     toggleMust: function toggleMust() {
       this.isMust = !this.isMust;
@@ -360,12 +407,19 @@ _vue2.default.component('taskcomp', {
     },
     changeName: function changeName(e) {
       this.taskName = e.target.value;
-    }
+    },
+    deleteTask: function deleteTask() {},
+    updateTask: function updateTask() {},
+
+    addTask: function addTask() {},
+    searchTask: function searchTask() {}
+
   }
 });
 
+// ------------------------------------------------
 new _vue2.default({
-  el: '#app9',
+  el: '#apptodolist',
   data: {
     isEdit: false,
     todos: [{
@@ -389,7 +443,67 @@ new _vue2.default({
       isDone: true,
       isMust: true
     }]
-  }
+  },
+
+  computed: {
+    classTaskItem: function classTaskItem() {
+      return {
+        'todoList__item': true,
+        'todoList__item--done': this.isDone,
+        'todoList__item--must': this.isMust
+      };
+    },
+    classCheckBox: function classCheckBox() {
+      return {
+        'far': true,
+        'fa-square': !this.isDone,
+        'fa-check-square': this.isDone,
+        'icon-checkbox': true
+      };
+    },
+    classMustIcon: function classMustIcon() {
+      return {
+        'fas': this.isMust,
+        'far': !this.isMust,
+        'fa-star': true,
+        'icon-star': true
+      };
+    }
+  },
+  methods: (_methods = {
+    toggleDone: function toggleDone(todo) {
+      todo.isDone = !todo.isDone;
+    },
+    keyDownAddTask: function keyDownAddTask(e) {
+      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
+      if (e.keyCode !== 13) return;
+      var inputVal = e.target.value;
+
+      this.isEdit = false;
+    },
+
+    toggleMust: function toggleMust() {
+      this.isMust = !this.isMust;
+    },
+    showEditBox: function showEditBox() {
+      this.isEdit = true;
+    },
+    blurCloseEditBox: function blurCloseEditBox(e) {
+      this.taskName = e.currentTarget.value;
+      this.isEdit = false;
+    },
+    keyDownCloseEditBox: function keyDownCloseEditBox(e) {
+      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
+      if (e.keyCode !== 13) return;
+      this.taskName = e.currentTarget.value;
+      this.isEdit = false;
+    },
+    changeName: function changeName(e) {
+      this.taskName = e.target.value;
+    }
+  }, _defineProperty(_methods, 'changeName', function changeName(e) {
+    this.todo.taskName = e.target.value;
+  }), _defineProperty(_methods, 'deleteTask', function deleteTask() {}), _defineProperty(_methods, 'updateTask', function updateTask() {}), _defineProperty(_methods, 'addTask', function addTask() {}), _defineProperty(_methods, 'searchTask', function searchTask() {}), _methods)
 
 });
 

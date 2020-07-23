@@ -10,66 +10,62 @@
 
 <body>
   <div class="main">
-    <div class="heading">
-      <h1 class="heading__mainTitle">Todo List</h1>
-      <h2 class="heading__subTitle">with Vue.js</h2>
-      <i class="fab fa-vuejs heading__subTitle"></i>
+    <div id="apptodolist">
+
+      <section class="heading">
+        <h1 class="heading__mainTitle">Todo List</h1>
+        <h5 class="heading__subTitle">with Vue.js</h5>
+        <i class="fab fa-vuejs heading__subTitle"></i>
+      </section>
+
+      <section>
+        <!-- 入力フォーム -->
+        <todo-creator :createprops="todos">
+        </todo-creator>
+
+      </section>
+
+      <!-- 検索ボックス -->
+      <section class="searchBox js-searchBox">
+        <input type="text" class="searchBox__input js-searchTasks" value="" placeholder="Search...">
+        <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+      </section>
+
+      <!-- ToDoリスト -->
+      <section class="section__todoList">
+        <h5>コンポーネント化</h5>
+        <ul class="todoList">
+          <taskcomp v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
+        </ul>
+        <ul class="todoList">
+          <taskcomp v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
+        </ul>
+      </section>
     </div>
 
-    <div id="app">
-      <!-- 入力フォーム -->
-      <div class="formArea js-form">
-        <div class="entryBox">
-          <input type="text" class="entryBox__input js-form-val" value="" placeholder="タスクを入力">
-          <i class="far fa-paper-plane entryBox__btn js-add-todo" aria-hidden="true"></i>
-        </div>
-        <!-- エラーメッセージ -->
-        <span class="formArea__is-error"></span>
-      </div>
+
+    <div id="todo-list">
+      <!-- ToDoリスト -->
+      <section class="section__todoList">
+        <h5>タスク1件</h5>
+        <ul class="todoList">
+          <li :class="classTaskItem">
+            <!-- チェックボックス -->
+            <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
+            <!-- タスク名表示 -->
+            <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
+            <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
+              @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
+            <!-- スターアイコン -->
+            <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
+            <!-- ゴミ箱アイコン -->
+            <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
+          </li>
+        </ul>
+      </section>
     </div>
 
-    <!-- 検索ボックス -->
-    <div class="searchBox js-searchBox">
-      <input type="text" class="searchBox__input js-searchTasks" value="" placeholder="Search...">
-      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
-    </div>
-
-    <!-- ToDoリスト -->
-    <section id="app9" class="section__todoList">
-      <h2>コンポーネント</h2>
-
-      <!-- v-forでループさせてデータの個数分コンポーネントを作る -->
-      <!-- propsとしてtodoを渡す -->
-      <ul>
-        <taskcomp v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
-      </ul>
-      <ul>
-        <taskcomp v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
-      </ul>
-
-    </section>
-
-
-    <!-- ToDoリスト -->
-    <section class="section__todoList">
-      <h2>タスク1件</h2>
-      <ul id="todo-list">
-        <li :class="classTaskItem">
-          <!-- チェックボックス -->
-          <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
-          <!-- タスク名表示 -->
-          <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
-          <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
-            @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
-          <!-- スターアイコン -->
-          <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
-          <!-- ゴミ箱アイコン -->
-          <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
-        </li>
-      </ul>
-    </section>
   </div>
-
   <script src="dist/js/bundle.js"></script>
 </body>
 
