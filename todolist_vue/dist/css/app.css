@@ -10,12 +10,17 @@ body {
   justify-content: center;
   align-items: center;
 }
+
+
 .main {
   width: 100%;
   margin: 0 auto;
   padding: 10px;
   max-width: 400px;
   box-sizing: border-box;
+}
+.section__todoList {
+  margin-bottom: 50px;
 }
 .heading {
   text-align: center;

@@ -37,10 +37,14 @@
     <!-- ToDoリスト -->
     <section id="app9" class="section__todoList">
       <h2>コンポーネント</h2>
+
+      <!-- v-forでループさせてデータの個数分コンポーネントを作る -->
+      <!-- propsとしてtodoを渡す -->
       <ul>
-        <!-- v-forでループさせてデータの個数分コンポーネントを作る -->
-        <!-- propsとしてtodoを渡す -->
-        <listcomp v-for="todo in todos" :key="todo.id" :taskprops="todo"></listcomp>
+        <taskcomp v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
+      </ul>
+      <ul>
+        <taskcomp v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
       </ul>
 
     </section>

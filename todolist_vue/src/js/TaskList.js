@@ -1,7 +1,7 @@
 import Vue from 'vue'
 
 // イベントとメッセージを親コンポーネントに渡す
-Vue.component('listcomp', {
+Vue.component('taskcomp', {
   props: ['taskprops'],
   data: function () {
     return {
