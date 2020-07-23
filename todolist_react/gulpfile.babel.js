@@ -8,7 +8,7 @@ import eslint from 'gulp-eslint';
 
 // npmで出るエラー、警告集
 // https://qiita.com/M-ISO/items/d693ac892549fc95c14c
-// chromeのreact-dev-toolをインストールしておく
+// chromeのreact-dev-toolをインストールする（開発ツールの「Components」からcomponentのツリー構造、props、stateが確認できる）
 // https://chrome.google.com/webstore/detail/react-developer-tools/fmkadmapgofadopljbjfkapdkoienihi/related
 
 
@@ -23,20 +23,19 @@ gulp.task('build', function (done) {
     .pipe(gulp.dest('dist/js/'));
   done();
 });
-gulp.task('browser-sync', function (done) {
+gulp.task('browser-sync', function () {
   browserSync.init({
     server: {
       baseDir: "./", // 対象ディレクトリ
       index: "index.html" //indexファイル名
     }
   });
-  done();
 });
 gulp.task('bs-reload', function (done) {
   browserSync.reload();
   done();
 });
-gulp.task('eslint', function (done) {
+gulp.task('eslint', function () {
   return gulp.src(['src/**/*.js']) // lint のチェック先を指定
     .pipe(plumber({
       // エラーをハンドル
@@ -54,11 +53,11 @@ gulp.task('eslint', function (done) {
         });
       }
     }))
-    .pipe(eslint({ useEslintrc: true })) // .eslintrc を参照
+    .pipe(eslint({ useEslintrc: true })) // 設定ファイル .eslintrc を参照する
+    // お決まりパターン
     .pipe(eslint.format())
     .pipe(eslint.failOnError())
     .pipe(plumber.stop());
-  done();
 });
 
 

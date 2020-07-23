@@ -13,24 +13,27 @@ import eslint from 'gulp-eslint';
 
 
 // gulpタスクの作成
-gulp.task('build', function () {
+gulp.task('build', function (end) {
   gulp.src('src/js/app.js')
     .pipe(plumber({
       errorHandler: notify.onError("Error: <%= error.message %>")
     }))
     .pipe(webpack(webpackConfig))
     .pipe(gulp.dest('dist/js/'));
+  end();
 });
-gulp.task('browser-sync', function () {
+gulp.task('browser-sync', function (end) {
   browserSync.init({
     server: {
       baseDir: "./", // 対象ディレクトリ
       index: "index.html" //indexファイル名
     }
   });
+  end();
 });
-gulp.task('bs-reload', function () {
+gulp.task('bs-reload', function (end) {
   browserSync.reload();
+  end();
 });
 gulp.task('eslint', function () {
   return gulp.src(['src/**/*.js']) // lint のチェック先を指定
@@ -58,11 +61,12 @@ gulp.task('eslint', function () {
 
 
 // Gulpを使ったファイルの監視
-gulp.task('default', gulp.series(gulp.parallel('build', 'browser-sync'), function () {
+gulp.task('default', gulp.series(gulp.parallel('build', 'browser-sync'), function (end) {
   gulp.watch('./src/**/*.js', gulp.task('build'));
   gulp.watch('./*.html', gulp.task('bs-reload'));
   gulp.watch('./dist/**/*.+(js|css)', gulp.task('bs-reload'));
   gulp.watch('./src/**/*.js', gulp.task('eslint'));
+  end();
 }));
 
 // gulp.task('default', ['build', 'browser-sync'], function(){
