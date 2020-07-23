@@ -28,7 +28,7 @@ new Vue({
   data: {
     message: 'このページをロードしたのは ' + new Date().toLocaleString(),
     classObject: {
-      active: true,
+      active: true, //class="active"が出力される
       'text-danger': false
     }
   }
