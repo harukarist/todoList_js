@@ -14929,7 +14929,7 @@ var TaskView = Backbone.View.extend({
     'click .js-click-to-remove': 'remove', //ゴミ箱アイコンをクリックした時
     'click .js-toggle-must': 'toggleMust', //スターアイコンをクリックした時
     'click .js-todoList-taskName': 'showEdit', //タスク名をクリックした時
-    'blur .js-todoList-editName': 'closeEdit', //タスク名をクリックした時
+    'blur .js-todoList-editName': 'closeEdit', //編集ボックスのフォーカスが外れた時
     // 'keydown .js-todoList-editName': 'watchEdit', //編集ボックスでkeydownした時
     'keyup .js-todoList-editName': 'checkKeyUp' //編集ボックスでkeyupした時
   },

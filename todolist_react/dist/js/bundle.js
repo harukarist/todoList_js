@@ -32736,36 +32736,26 @@ var TodoList = function (_React$Component) {
         // 上記でthis.propsを入れた変数をTaskコンポーネントにpropsで渡す
         // {}にアロー関数を入れて、propsで取り出したメソッドをfunctionで渡す（引数としてタスクidやタスク名を渡す）
 
+        var taskComponent = _react2.default.createElement(_Task2.default, _extends({ key: todos[i].id }, todos[i], {
+          onClickToggleDone: function onClickToggleDone() {
+            return _onClickToggleDone(todos[i].id);
+          },
+          onClickToggleMust: function onClickToggleMust() {
+            return _onClickToggleMust(todos[i].id);
+          },
+          onClickRemove: function onClickRemove() {
+            return _onClickRemove(todos[i].id);
+          },
+          onEnterUpdateTask: function onEnterUpdateTask(taskName) {
+            return _onEnterUpdateTask(todos[i].id, taskName);
+          } }));
+
         if (!todos[i].isMust) {
           console.log('normalTask:', todos[i].taskName);
-          normalTasks.push(_react2.default.createElement(_Task2.default, _extends({ key: todos[i].id }, todos[i], {
-            onClickToggleDone: function onClickToggleDone() {
-              return _onClickToggleDone(todos[i].id);
-            },
-            onClickToggleMust: function onClickToggleMust() {
-              return _onClickToggleMust(todos[i].id);
-            },
-            onClickRemove: function onClickRemove() {
-              return _onClickRemove(todos[i].id);
-            },
-            onEnterUpdateTask: function onEnterUpdateTask(taskName) {
-              return _onEnterUpdateTask(todos[i].id, taskName);
-            } })));
+          normalTasks.push(taskComponent);
         } else {
           console.log('mustTask:', todos[i].taskName);
-          mustTasks.push(_react2.default.createElement(_Task2.default, _extends({ key: todos[i].id }, todos[i], {
-            onClickToggleDone: function onClickToggleDone() {
-              return _onClickToggleDone(todos[i].id);
-            },
-            onClickToggleMust: function onClickToggleMust() {
-              return _onClickToggleMust(todos[i].id);
-            },
-            onClickRemove: function onClickRemove() {
-              return _onClickRemove(todos[i].id);
-            },
-            onEnterUpdateTask: function onEnterUpdateTask(taskName) {
-              return _onEnterUpdateTask(todos[i].id, taskName);
-            } })));
+          mustTasks.push(taskComponent);
         }
 
         // タスクの中でonClickToggleDoneを実行すると、実際はこのTodoListコンポーネントのpropsのonClickToggleDoneメソッドが実行され、引数としてタスクのIDが渡される
@@ -32868,7 +32858,7 @@ var Task = function (_React$Component) {
 
     _this.state = {
       taskName: _this.props.taskName,
-      editMode: false
+      isEdit: false
     };
     // ハンドラを定義、bind()でthisを縛る
     _this.handleClickShowEdit = _this.handleClickShowEdit.bind(_this);
@@ -32888,7 +32878,7 @@ var Task = function (_React$Component) {
     key: 'handleClickShowEdit',
     value: function handleClickShowEdit() {
       this.setState({
-        editMode: true
+        isEdit: true
       });
     }
   }, {
@@ -32897,7 +32887,7 @@ var Task = function (_React$Component) {
       if (e.keyCode === 13 && e.keyCode === prevKeyCode) {
         this.setState({
           taskName: e.currentTarget.value,
-          editMode: false
+          isEdit: false
         });
         // propsで受け取ったTodoList.jsのメソッド（コンテナから渡ってきたもの）を実行
         // dispatch()でIDとタスク名をアクションに通知する
@@ -32935,7 +32925,7 @@ var Task = function (_React$Component) {
         'icon-star': true
       });
 
-      var taskContent = this.state.editMode ? _react2.default.createElement('input', { type: 'text', className: 'todoList__editBox', value: this.state.taskName,
+      var taskContent = this.state.isEdit ? _react2.default.createElement('input', { type: 'text', className: 'todoList__editBox', value: this.state.taskName,
         onChange: this.handleChangeName, onKeyUp: this.handleKeyUpCloseEdit }) : _react2.default.createElement(
         'span',
         { className: 'todoList__taskName', onClick: this.handleClickShowEdit },

@@ -10,7 +10,7 @@ class Task extends React.Component {
     super(props);
     this.state = {
       taskName: this.props.taskName,
-      editMode: false
+      isEdit: false
     };
     // ハンドラを定義、bind()でthisを縛る
     this.handleClickShowEdit = this.handleClickShowEdit.bind(this);
@@ -24,21 +24,21 @@ class Task extends React.Component {
   }
   handleClickShowEdit() {
     this.setState({
-      editMode: true
+      isEdit: true
     });
   }
   handleKeyUpCloseEdit(e) {
-    if (e.keyCode === 13 && e.keyCode === prevKeyCode) {
+    if (e.keyCode === 13) {
       this.setState({
         taskName: e.currentTarget.value,
-        editMode: false
+        isEdit: false
       });
       // propsで受け取ったTodoList.jsのメソッド（コンテナから渡ってきたもの）を実行
       // dispatch()でIDとタスク名をアクションに通知する
       this.props.onEnterUpdateTask(e.currentTarget.value);
       // Reduxで自動的に連携してくれる
     }
-    let prevKeyCode = e.keyCode;
+    // let prevKeyCode = e.keyCode;
   }
   render() {
     // propsとして受け取ったものを変数として展開
@@ -63,9 +63,10 @@ class Task extends React.Component {
       'icon-star': true
     });
 
-    const taskContent = (this.state.editMode) ?
+    const taskContent = (this.state.isEdit) ?
       <input type="text" className="todoList__editBox" value={this.state.taskName}
-        onChange={this.handleChangeName} onKeyUp={this.handleKeyUpCloseEdit} /> :
+        // onChange={this.handleChangeName} onKeyUp={this.handleKeyUpCloseEdit} /> :
+        onChange={this.handleChangeName} onKeyDown={this.handleKeyUpCloseEdit} /> :
       <span className="todoList__taskName" onClick={this.handleClickShowEdit}>{this.state.taskName}</span>;
 
     return (

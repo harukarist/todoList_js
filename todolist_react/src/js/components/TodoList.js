@@ -25,24 +25,18 @@ class TodoList extends React.Component {
       // 上記でthis.propsを入れた変数をTaskコンポーネントにpropsで渡す
       // {}にアロー関数を入れて、propsで取り出したメソッドをfunctionで渡す（引数としてタスクidやタスク名を渡す）
 
+      let taskComponent = <Task key={todos[i].id} {...todos[i]}
+        onClickToggleDone={() => onClickToggleDone(todos[i].id)}
+        onClickToggleMust={() => onClickToggleMust(todos[i].id)}
+        onClickRemove={() => onClickRemove(todos[i].id)}
+        onEnterUpdateTask={(taskName) => onEnterUpdateTask(todos[i].id, taskName)} />;
+
       if (!todos[i].isMust) {
         console.log('normalTask:', todos[i].taskName);
-        normalTasks.push(
-          <Task key={todos[i].id} {...todos[i]}
-            onClickToggleDone={() => onClickToggleDone(todos[i].id)}
-            onClickToggleMust={() => onClickToggleMust(todos[i].id)}
-            onClickRemove={() => onClickRemove(todos[i].id)}
-            onEnterUpdateTask={(taskName) => onEnterUpdateTask(todos[i].id, taskName)} />
-        );
+        normalTasks.push(taskComponent);
       } else {
         console.log('mustTask:', todos[i].taskName);
-        mustTasks.push(
-          <Task key={todos[i].id} {...todos[i]}
-            onClickToggleDone={() => onClickToggleDone(todos[i].id)}
-            onClickToggleMust={() => onClickToggleMust(todos[i].id)}
-            onClickRemove={() => onClickRemove(todos[i].id)}
-            onEnterUpdateTask={(taskName) => onEnterUpdateTask(todos[i].id, taskName)} />
-        );
+        mustTasks.push(taskComponent);
       }
 
       // タスクの中でonClickToggleDoneを実行すると、実際はこのTodoListコンポーネントのpropsのonClickToggleDoneメソッドが実行され、引数としてタスクのIDが渡される
