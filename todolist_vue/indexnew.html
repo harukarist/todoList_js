@@ -35,26 +35,18 @@
       <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
     </div>
 
-    <!-- ToDoリスト -->
-    <section class="section__todoList">
-      <div>
-        <ul id="todo-list">
-          <li :class="classTaskItem">
-            <!-- <li v-for="todo in todos" :key="todo.id" :class="classTaskItem"> -->
-            <!-- チェックボックス -->
-            <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
-            <!-- タスク名表示 -->
-            <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
-            <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
-              @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
-            <!-- スターアイコン -->
-            <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
-            <!-- ゴミ箱アイコン -->
-            <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
-          </li>
+
+    <section class="section">
+      <div id="app9">
+        <ul>
+          <!-- v-forでループさせてデータの個数分コンポーネントを作る -->
+          <task-component v-for="todo in todos" :key="todo.id" :class="classTaskItem" :todo="todo" @toggle-done="toggleDone()">
+          </task-component>
+          <!--  v-on:enlarge-text="fontSizeScale()"  -->
         </ul>
       </div>
     </section>
+
   </div>
 
   <script src="dist/js/bundle.js"></script>
