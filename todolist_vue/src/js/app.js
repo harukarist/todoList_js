@@ -1,13 +1,53 @@
 import Vue from 'vue'
+import TaskList from './TaskList'
+
 Vue.config.devtools = true
 
+new Vue({
+  el: '#app9',
+  components: { TaskList },
+  template: '<tasklist/>'
+  data: {
+    isEdit: false,
+    todos: [
+      {
+        id: '0001',
+        taskName: '未完了のタスク',
+        isDone: false,
+        isMust: false,
+      },
+      {
+        id: '0002',
+        taskName: '終わったタスク',
+        isDone: true,
+        isMust: false,
+      },
+      {
+        id: '0003',
+        taskName: '未完了の大事なタスク',
+        isDone: false,
+        isMust: true,
+      },
+      {
+        id: '0004',
+        taskName: '終わった大事なタスク',
+        isDone: true,
+        isMust: true,
+      },
+    ]
+  },
+
+})
+
+// -------------------------------------------------
+// タスク1件のサンプル
 new Vue({
   el: '#todo-list',
   data: {
     isEdit: false,
     todo: {
       id: '0001',
-      taskName: '未完了のタスク',
+      taskName: 'タスク1',
       isDone: false,
       isMust: false
     }

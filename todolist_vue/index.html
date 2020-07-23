@@ -17,7 +17,6 @@
     </div>
 
     <div id="app">
-
       <!-- 入力フォーム -->
       <div class="formArea js-form">
         <div class="entryBox">
@@ -36,24 +35,34 @@
     </div>
 
     <!-- ToDoリスト -->
+    <section id="app9" class="section__todoList">
+      <h2>コンポーネント</h2>
+      <ul>
+        <!-- v-forでループさせてデータの個数分コンポーネントを作る -->
+        <!-- propsとしてtodoを渡す -->
+        <listcomp v-for="todo in todos" :key="todo.id" :taskprops="todo"></listcomp>
+      </ul>
+
+    </section>
+
+
+    <!-- ToDoリスト -->
     <section class="section__todoList">
-      <div>
-        <ul id="todo-list">
-          <li :class="classTaskItem">
-            <!-- <li v-for="todo in todos" :key="todo.id" :class="classTaskItem"> -->
-            <!-- チェックボックス -->
-            <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
-            <!-- タスク名表示 -->
-            <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
-            <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
-              @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
-            <!-- スターアイコン -->
-            <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
-            <!-- ゴミ箱アイコン -->
-            <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
-          </li>
-        </ul>
-      </div>
+      <h2>タスク1件</h2>
+      <ul id="todo-list">
+        <li :class="classTaskItem">
+          <!-- チェックボックス -->
+          <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
+          <!-- タスク名表示 -->
+          <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
+          <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
+            @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
+          <!-- スターアイコン -->
+          <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
+          <!-- ゴミ箱アイコン -->
+          <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
+        </li>
+      </ul>
     </section>
   </div>
 
