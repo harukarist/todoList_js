@@ -3,6 +3,7 @@ body {
   color: #BCBCBC;
   width: 100vw;
   /* height: 100vh; */
+  min-height: 100vh;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -49,7 +50,7 @@ body {
   align-items: center;
   position: relative;
   /* background: #505050; */
-  background: #5c5c5c;
+  background: #201b1b;
   color: #A5A5A5;
 }
 .entryBox__input {
@@ -64,11 +65,12 @@ body {
 }
 .entryBox__input:focus {
   outline: none;
-  background: #5c5c5c;
-  color: #d1d1d1;
+  background: #201b1b;
+  color: #A5A5A5;
 }
 .entryBox__btn {
-  color: #C7C7C7;
+  /* color: #C7C7C7; */
+  color: #54615b;
   text-align: right;
   padding: 10px;
   font-size: 28px;
@@ -115,6 +117,7 @@ body {
   font-size: 18px;
   width: 20px;
   margin: 5px;
+  color: #54615b;
 }
 .todoList {
   list-style: none;
@@ -143,13 +146,18 @@ body {
   border: none;
   opacity: .4;
 }
-.todoList__taskName:after {
+.todoList__taskName {
+  width: 260px;
+  overflow: hidden;
+}
+.todoList__taskName:before {
   content: '';
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
   left: 0;
+  z-index: -1
 }
 .todoList__item--done > .todoList__taskName {
   text-decoration: line-through;
@@ -157,26 +165,36 @@ body {
 .todoList__item--must {
   background: #4D4D4D;
 }
-.todoList__item--must > .icon-star {
-  color: #76A1B4;
-}
 
+.todoList__editArea {
+  width: 250px;
+  overflow: hidden;
+}
+.todoList__editArea:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: -1
+}
 .todoList__editBox {
-  width: 60%;
+  width: 100%;
   height: 100%;
   border: none;
   padding: 10px;
+  box-sizing: border-box;
   font-size: inherit;
-  background: inherit;
-  color: inherit;
-}
-.todoList__editBox:focus {
   outline: none;
-  /* background: #505050; */
-  /* color: #A5A5A5; */
   background: #5c5c5c;
   color: #d1d1d1;
 }
+/* .todoList__editBox:focus {
+  outline: none;
+  background: #5c5c5c;
+  color: #d1d1d1;
+} */
 .icon-checkbox, .icon-star, .icon-sort, .icon-trash {
   cursor: pointer;
   transition: .3s transform;
@@ -187,7 +205,6 @@ body {
   transition: .3s transform;
   color: #76A1B4;
 }
-
 .icon-checkbox {
   margin-right: 10px;
   font-size: 24px;
@@ -195,11 +212,12 @@ body {
 .icon-star {
   position: absolute;
   right: 50px;
-  top: 22px;
   font-size: 18px;
+}
+.todoList__item--must > .icon-star {
+  color: #76A1B4;
 }
 .icon-trash {
   position: absolute;
   right: 20px;
-  top: 22px;
 }

@@ -1,8 +1,50 @@
 import Vue from 'vue'
 
 
-Vue.component('todoCreator', {
-  props: ['createprops'],
+// ------------------------------------------------
+// タスク絞り込みコンポーネント
+Vue.component('task-search', {
+  props: {
+    listprops: Array
+  },
+  data: function () {
+    return {
+      searchVal: '',
+    }
+  },
+  template:
+    `
+    <div class="searchBox">
+      <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..." @keyup="searchTasks">
+      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+    </div>
+  `,
+  methods: {
+    filterTasks: function (elm) {
+      // 第二引数の'i'は「大文字・小文字を区別しない」オプション
+      const regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i')
+      console.log('filterTasks', this.searchVal)
+      console.log('elm', elm)
+      console.log(elm.taskName.match(regexp))
+    },
+    searchTasks: function () {
+      // console.log(this.searchVal)
+      // console.log(this.listprops)
+      return {
+        todos: (this.searchVal) ? this.listprops.filter(this.filterTasks(this.listprops)) : this.listprops
+      }
+    },
+  }
+
+})
+
+// ------------------------------------------------
+// タスク登録コンポーネント
+Vue.component('todo-creator', {
+  props: {
+    listprops: Array
+  },
+  // props: ['listprops'],
   data: function () {
     return {
       inputVal: '',
@@ -13,8 +55,8 @@ Vue.component('todoCreator', {
     `
     <div class="formArea">
       <div class="entryBox">
-        <input type="text" class="entryBox__input" value="" v-model="inputVal" placeholder="タスクを入力する" @keydown.enter="keyDownAddTask">
-        <i class="far fa-paper-plane entryBox__btn" @click="clickAddTask" aria-hidden="true"></i>
+        <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="inputVal" placeholder="タスクを入力" @keydown.13="addTask">
+        <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>
       </div>
       <span class="formArea__is-error">{{ errMsg }}</span>
     </div>
@@ -22,127 +64,112 @@ Vue.component('todoCreator', {
   methods: {
     createHashId: function () {
       return Math.random().toString(36).slice(-16);
+      // 【TODO】完全に一意にする
     },
-    keyDownAddTask: function (e) {
-      // this.inputVal = e.target.value;
-      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
-      if (e.keyCode === 13 && this.inputVal !== '') {
-        this.addTask(this.inputVal);
-        this.inputVal = ''
-        this.errMsg = ''
-      }
-    },
-    clickAddTask: function (e) {
-      // let text = e.target.value;
-      let text = this.inputVal;
+    addTask: function () {
+      // v-modelの値を取得
+      let text = this.inputVal
       if (!text) {
-        console.log('err');
+        console.log('err')
         this.errMsg = 'タスクを入力してください'
       } else {
-        console.log('text', text);
-        this.errMsg = '';
-        console.log(this.errMsg);
-        this.addTask(text);
+        this.listprops.push({
+          id: this.createHashId(),
+          taskName: text,
+          isDone: false,
+          isMust: false
+        })
         this.inputVal = ''
+        this.errMsg = ''
+        console.log('listprops', this.listprops)
       }
-    },
-    addTask: function (text) {
-      this.createprops.push({
-        id: this.createHashId(),
-        taskName: text
-      });
-      console.log('createprops', this.createprops);
+      // 入力フォームにフォーカス(ref属性がinputBoxのDOM)
+      this.$refs.inputBox.focus();
     }
   },
 })
 
 // ------------------------------------------------
-// イベントとメッセージを親コンポーネントに渡す
-Vue.component('taskcomp', {
-  props: ['taskprops'],
+// タスク表示コンポーネント
+// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></task-item> で呼び出し
+Vue.component('task-item', {
+  props: {
+    taskprops: Object
+  },
   data: function () {
     return {
       isEdit: false,
-      taskName: this.taskprops.taskName,
-      isDone: this.taskprops.isDone,
-      isMust: this.taskprops.isMust,
     }
   },
-  // ヒアドキュメント（改行しても1つのデータとしてtemplateに登録できる）
+  // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
   template:
     `
-  <li :class="classTaskItem">
-  <!--チェックボックス -->
-  <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
-  <!--タスク名表示 -->
-  <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName"> {{ taskprops.taskName }}</span>
-  <input v-show="isEdit" type="text" class="todoList__editBox" :value="taskprops.taskName" @change="changeName" @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
-  <!--スターアイコン -->
-  <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>
-  <!--ゴミ箱アイコン -->
-  <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
+  <li :class="classTaskItem" class="todoList__item">
+    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>
+
+    <span v-show="!isEdit" class="todoList__taskName"　@click="isEdit=true">{{ taskprops.taskName }}</span>
+    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="taskprops.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>
+
+    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>
+    <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>
   </li>
   `,
 
   computed: {
     classTaskItem: function () {
       return {
-        'todoList__item': true,
-        'todoList__item--done': this.isDone,
-        'todoList__item--must': this.isMust,
+        'todoList__item--done': this.taskprops.isDone,
+        'todoList__item--must': this.taskprops.isMust,
       }
     },
     classCheckBox: function () {
       return {
         'far': true,
-        'fa-square': !this.isDone,
-        'fa-check-square': this.isDone,
+        'fa-check-square': this.taskprops.isDone,
+        'fa-square': !this.taskprops.isDone,
         'icon-checkbox': true
       }
     },
     classMustIcon: function () {
       return {
-        'fas': this.isMust,
-        'far': !this.isMust,
+        'fas': this.taskprops.isMust,
+        'far': !this.taskprops.isMust,
         'fa-star': true,
         'icon-star': true
       }
     },
   },
   methods: {
-    toggleDone(task) {
-      this.isDone = !this.isDone;
+    toggleDone: function () {
+      this.taskprops.isDone = !this.taskprops.isDone
+      console.log('this.taskprops.isDone', this.taskprops.isDone)
     },
-
     toggleMust: function () {
-      this.isMust = !this.isMust
+      this.taskprops.isMust = !this.taskprops.isMust
+      console.log('this.taskprops.isMust', this.taskprops.isMust)
     },
-    showEditBox: function () {
+    focusEdit: function () {
       this.isEdit = true
+      this.$refs.editBox.focus();
     },
-    blurCloseEditBox: function (e) {
-      this.taskName = e.currentTarget.value;
+    closeEdit: function (e) {
+      if (this.taskprops.taskName !== e.target.value) {
+        this.changeTaskName(e)
+      }
       this.isEdit = false
     },
-    keyDownCloseEditBox: function (e) {
-      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
-      if (e.keyCode !== 13) return;
-      this.taskName = e.currentTarget.value;
-      this.isEdit = false
+    changeTaskName: function (e) {
+      let text = e.target.value
+      console.log('changeTask',text)
+      if (text) {
+        this.taskprops.taskName = text
+      }
     },
-    changeName: function (e) {
-      this.taskName = e.target.value
+    deleteTask: function (index) {
+      console.log('削除する', index)
+      console.log(this.taskprops)
+      this.taskprops.splice(index)
     },
-    deleteTask: function () {
-    },
-    updateTask: function () {
-    },
-
-    addTask: function () {
-    },
-    searchTask: function () {
-    },
-
   },
 })
 
@@ -150,7 +177,7 @@ Vue.component('taskcomp', {
 new Vue({
   el: '#apptodolist',
   data: {
-    isEdit: false,
+    searchVal: '',
     todos: [
       {
         id: '0001',
@@ -179,193 +206,4 @@ new Vue({
     ]
   },
 
-  computed: {
-    classTaskItem: function () {
-      return {
-        'todoList__item': true,
-        'todoList__item--done': this.isDone,
-        'todoList__item--must': this.isMust,
-      }
-    },
-    classCheckBox: function () {
-      return {
-        'far': true,
-        'fa-square': !this.isDone,
-        'fa-check-square': this.isDone,
-        'icon-checkbox': true
-      }
-    },
-    classMustIcon: function () {
-      return {
-        'fas': this.isMust,
-        'far': !this.isMust,
-        'fa-star': true,
-        'icon-star': true
-      }
-    },
-  },
-  methods: {
-    toggleDone: function (todo) {
-      todo.isDone = !todo.isDone
-    },
-    keyDownAddTask: function (e) {
-      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
-      if (e.keyCode !== 13) return;
-      const inputVal = e.target.value;
-
-      this.isEdit = false
-    },
-
-    toggleMust: function () {
-      this.isMust = !this.isMust
-    },
-    showEditBox: function () {
-      this.isEdit = true
-    },
-    blurCloseEditBox: function (e) {
-      this.taskName = e.currentTarget.value;
-      this.isEdit = false
-    },
-    keyDownCloseEditBox: function (e) {
-      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
-      if (e.keyCode !== 13) return;
-      this.taskName = e.currentTarget.value;
-      this.isEdit = false
-    },
-    changeName: function (e) {
-      this.taskName = e.target.value
-    },
-    changeName: function (e) {
-      this.todo.taskName = e.target.value
-    },
-
-    deleteTask: function () {
-    },
-    updateTask: function () {
-    },
-
-    addTask: function () {
-    },
-    searchTask: function () {
-    },
-
-  },
-
-
-})
-
-// -------------------------------------------------
-// タスク1件のサンプル
-new Vue({
-  el: '#todo-list',
-  data: {
-    isEdit: false,
-    todo: {
-      id: '0001',
-      taskName: 'タスク1',
-      isDone: false,
-      isMust: false
-    }
-    // todos: [
-    //   {
-    //     id: '0001',
-    //     taskName: '未完了のタスク',
-    //     isDone: false,
-    //     isMust: false
-    //   },
-    //   {
-    //     id: '0002',
-    //     taskName: '終わったタスク',
-    //     isDone: true,
-    //     isMust: false
-    //   },
-    //   {
-    //     id: '0003',
-    //     taskName: '未完了の大事なタスク',
-    //     isDone: false,
-    //     isMust: true
-    //   },
-    //   {
-    //     id: '0004',
-    //     taskName: '終わった大事なタスク',
-    //     isDone: true,
-    //     isMust: true
-    //   },
-    // ],
-  },
-  computed: {
-    classTaskItem: function () {
-      return {
-        'todoList__item': true,
-        'todoList__item--done': this.todo.isDone,
-        'todoList__item--must': this.todo.isMust
-      }
-    },
-    classCheckBox: function () {
-      return {
-        'far': true,
-        'fa-square': !this.todo.isDone,
-        'fa-check-square': this.todo.isDone,
-        'icon-checkbox': true
-      }
-    },
-    classMustIcon: function () {
-      return {
-        'fas': this.todo.isMust,
-        'far': !this.todo.isMust,
-        'fa-star': true,
-        'icon-star': true
-      }
-    },
-  },
-  methods: {
-    toggleDone: function () {
-      this.todo.isDone = !this.todo.isDone
-    },
-    toggleMust: function () {
-      this.todo.isMust = !this.todo.isMust
-    },
-    showEditBox: function () {
-      this.isEdit = true
-    },
-    blurCloseEditBox: function (e) {
-      this.todo.taskName = e.currentTarget.value;
-      this.isEdit = false
-    },
-    keyDownCloseEditBox: function (e) {
-      // keydown.enterは日本語入力中のEnterの場合、keyCode = 229となる
-      if (e.keyCode !== 13) return;
-      this.todo.taskName = e.currentTarget.value;
-      this.isEdit = false
-    },
-    changeName: function (e) {
-      this.todo.taskName = e.target.value
-    },
-
-    deleteTask: function () {
-      // todos: _.reject(state.todos, { 'id': action.id })
-    },
-    updateTask: function () {
-      // todos: state.this.todo.map((todo) => {
-      //   // state.todosはコレクション（配列）なのでmap()が使える。
-      //   // map()にはfunctionが渡せるので、アロー関数でtodosに入っている配列文を実行してループ。
-      //   if (this.todo.id === action.id) {
-      //     // 自動的に個々のtodoのデータが入ってくるのでtodoのidとactionで受け取ったidが同じかを判定
-      //     // IDが同じなら、差分ありと認識させるために新しいオブジェクトを生成する
-      //     return Object.assign({}, todo, {
-      //       taskName: action.taskName
-      //       // taskNameを書き換えて、現在のtodoオブジェクトと空オブジェクトとマージする
-      //       // →todoのtaskNameがaction.taskNameに上書きされる
-      //     })
-      //   }
-      //   // idが同じでなければ何もせずtodoのデータをそのまま返す
-      //   return todo
-    },
-
-    addTask: function () {
-    },
-    searchTask: function () {
-    },
-
-  }
 })

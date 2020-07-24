@@ -18,49 +18,23 @@
         <i class="fab fa-vuejs heading__subTitle"></i>
       </section>
 
-      <section>
+      <section class="section__todoCreator">
         <!-- 入力フォーム -->
-        <todo-creator :createprops="todos">
-        </todo-creator>
-
+        <todo-creator :listprops="todos"></todo-creator>
       </section>
 
       <!-- 検索ボックス -->
-      <section class="searchBox js-searchBox">
-        <input type="text" class="searchBox__input js-searchTasks" value="" placeholder="Search...">
-        <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+      <section class="section__searchBox">
+        <task-search :listprops="todos"></task-search>
       </section>
 
       <!-- ToDoリスト -->
       <section class="section__todoList">
-        <h5>コンポーネント化</h5>
         <ul class="todoList">
-          <taskcomp v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
+          <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></task-item>
         </ul>
         <ul class="todoList">
-          <taskcomp v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></taskcomp>
-        </ul>
-      </section>
-    </div>
-
-
-    <div id="todo-list">
-      <!-- ToDoリスト -->
-      <section class="section__todoList">
-        <h5>タスク1件</h5>
-        <ul class="todoList">
-          <li :class="classTaskItem">
-            <!-- チェックボックス -->
-            <i @click="toggleDone" :class="classCheckBox" aria-hidden="true"></i>
-            <!-- タスク名表示 -->
-            <span v-show="!isEdit" @click="showEditBox" class="todoList__taskName">{{ todo.taskName }}</span>
-            <input v-show="isEdit" type="text" class="todoList__editBox" :value="todo.taskName" @change="changeName"
-              @keydown.enter="keyDownCloseEditBox" @blur="blurCloseEditBox">
-            <!-- スターアイコン -->
-            <i :class="classMustIcon" @click="toggleMust" aria-hidden="true"></i>
-            <!-- ゴミ箱アイコン -->
-            <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
-          </li>
+          <task-item v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></task-item>
         </ul>
       </section>
     </div>
