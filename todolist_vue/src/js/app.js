@@ -1,6 +1,5 @@
 import Vue from 'vue'
 
-
 // ------------------------------------------------
 // タスク絞り込みコンポーネント
 Vue.component('task-search', {
@@ -91,10 +90,10 @@ Vue.component('todo-creator', {
 
 // ------------------------------------------------
 // タスク表示コンポーネント
-// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></task-item> で呼び出し
+// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :todo="todo"></task-item> で呼び出し
 Vue.component('task-item', {
   props: {
-    taskprops: Object
+    todo: Object
   },
   data: function () {
     return {
@@ -106,10 +105,8 @@ Vue.component('task-item', {
     `
   <li :class="classTaskItem" class="todoList__item">
     <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>
-
-    <span v-show="!isEdit" class="todoList__taskName"　@click="isEdit=true">{{ taskprops.taskName }}</span>
-    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="taskprops.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>
-
+    <span v-show="!isEdit" class="todoList__taskName"　@click="isEdit=true">{{ todo.taskName }}</span>
+    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>
     <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>
     <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>
   </li>
@@ -118,22 +115,22 @@ Vue.component('task-item', {
   computed: {
     classTaskItem: function () {
       return {
-        'todoList__item--done': this.taskprops.isDone,
-        'todoList__item--must': this.taskprops.isMust,
+        'todoList__item--done': this.todo.isDone,
+        'todoList__item--must': this.todo.isMust,
       }
     },
     classCheckBox: function () {
       return {
         'far': true,
-        'fa-check-square': this.taskprops.isDone,
-        'fa-square': !this.taskprops.isDone,
+        'fa-check-square': this.todo.isDone,
+        'fa-square': !this.todo.isDone,
         'icon-checkbox': true
       }
     },
     classMustIcon: function () {
       return {
-        'fas': this.taskprops.isMust,
-        'far': !this.taskprops.isMust,
+        'fas': this.todo.isMust,
+        'far': !this.todo.isMust,
         'fa-star': true,
         'icon-star': true
       }
@@ -141,43 +138,43 @@ Vue.component('task-item', {
   },
   methods: {
     toggleDone: function () {
-      this.taskprops.isDone = !this.taskprops.isDone
-      console.log('this.taskprops.isDone', this.taskprops.isDone)
+      this.todo.isDone = !this.todo.isDone
+      console.log('this.todo.isDone', this.todo.isDone)
+      this.$emit('clicked-toggle-done');
     },
     toggleMust: function () {
-      this.taskprops.isMust = !this.taskprops.isMust
-      console.log('this.taskprops.isMust', this.taskprops.isMust)
+      this.todo.isMust = !this.todo.isMust
+      console.log('this.todo.isMust', this.todo.isMust)
     },
     focusEdit: function () {
       this.isEdit = true
       this.$refs.editBox.focus();
     },
     closeEdit: function (e) {
-      if (this.taskprops.taskName !== e.target.value) {
+      if (this.todo.taskName !== e.target.value) {
         this.changeTaskName(e)
       }
       this.isEdit = false
     },
     changeTaskName: function (e) {
       let text = e.target.value
-      console.log('changeTask',text)
+      console.log('changeTask', text)
       if (text) {
-        this.taskprops.taskName = text
+        this.todo.taskName = text
       }
     },
     deleteTask: function (index) {
       console.log('削除する', index)
-      console.log(this.taskprops)
-      this.taskprops.splice(index)
+      console.log(this.todo)
+      this.todo.splice(index)
     },
   },
 })
 
 // ------------------------------------------------
 new Vue({
-  el: '#apptodolist',
+  el: '#app',
   data: {
-    searchVal: '',
     todos: [
       {
         id: '0001',
@@ -205,5 +202,34 @@ new Vue({
       },
     ]
   },
+  methods: {
+    addTodos: function () {
+      // this.todos: [
+      //   // オブジェクトの配列を展開して1つ1つの要素の値を変更する
+      //   ...this.todos,
+      //   {
+      //     id: action.id, //actionで定義したidプロパティの値を取得
+      //     taskName: action.taskName, //actionで定義したtaskNameプロパティの値を取得
+      //     isDone: false,
+      //     isMust: false
+      //   }
+      // ]
+    },
+    updateTodos: function () {
+
+    },
+    removeTodos: function () {
+
+    },
+    toggleDone: function (id) {
+      console.log('親のtoggleDone', id)
+      
+      this.todos.toggleDone = !this.todos.toggleDone
+    },
+    toggleMust: function () {
+
+    },
+
+  }
 
 })

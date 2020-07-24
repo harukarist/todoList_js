@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <title>TodoList with Vue.js</title>
+  <link rel="stylesheet" href="dist/css/app.css">
+  <script src="https://kit.fontawesome.com/f2d7c28546.js" crossorigin="anonymous"></script>
+</head>
+
+<body>
+  <div class="main">
+
+    <!-- サンプル -->
+    <div id="sample">
+      <ul class="item-wrap">
+        <!-- itemコンポーネント -->
+        <item v-for="fruit in fruits" :fruit="fruit" @clicked-increase-button="incrementTotalCount"
+        @clicked-reduce-button="decrementTotalCount">
+        </item>
+      </ul>
+      <div class="total-count">合計：{{ totalCount }}個</div>
+    </div>
+    
+  </div>
+  <script src="dist/js/bundle.js"></script>
+</body>
+
+</html>

@@ -368,10 +368,10 @@ _vue2.default.component('todo-creator', {
 
 // ------------------------------------------------
 // タスク表示コンポーネント
-// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></task-item> で呼び出し
+// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :todo="todo"></task-item> で呼び出し
 _vue2.default.component('task-item', {
   props: {
-    taskprops: Object
+    todo: Object
   },
   data: function data() {
     return {
@@ -379,27 +379,27 @@ _vue2.default.component('task-item', {
     };
   },
   // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
-  template: '\n  <li :class="classTaskItem" class="todoList__item">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ taskprops.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="taskprops.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>\n\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>\n  </li>\n  ',
+  template: '\n  <li :class="classTaskItem" class="todoList__item">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ todo.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>\n  </li>\n  ',
 
   computed: {
     classTaskItem: function classTaskItem() {
       return {
-        'todoList__item--done': this.taskprops.isDone,
-        'todoList__item--must': this.taskprops.isMust
+        'todoList__item--done': this.todo.isDone,
+        'todoList__item--must': this.todo.isMust
       };
     },
     classCheckBox: function classCheckBox() {
       return {
         'far': true,
-        'fa-check-square': this.taskprops.isDone,
-        'fa-square': !this.taskprops.isDone,
+        'fa-check-square': this.todo.isDone,
+        'fa-square': !this.todo.isDone,
         'icon-checkbox': true
       };
     },
     classMustIcon: function classMustIcon() {
       return {
-        'fas': this.taskprops.isMust,
-        'far': !this.taskprops.isMust,
+        'fas': this.todo.isMust,
+        'far': !this.todo.isMust,
         'fa-star': true,
         'icon-star': true
       };
@@ -407,19 +407,20 @@ _vue2.default.component('task-item', {
   },
   methods: {
     toggleDone: function toggleDone() {
-      this.taskprops.isDone = !this.taskprops.isDone;
-      console.log('this.taskprops.isDone', this.taskprops.isDone);
+      this.todo.isDone = !this.todo.isDone;
+      console.log('this.todo.isDone', this.todo.isDone);
+      this.$emit('clicked-toggle-done');
     },
     toggleMust: function toggleMust() {
-      this.taskprops.isMust = !this.taskprops.isMust;
-      console.log('this.taskprops.isMust', this.taskprops.isMust);
+      this.todo.isMust = !this.todo.isMust;
+      console.log('this.todo.isMust', this.todo.isMust);
     },
     focusEdit: function focusEdit() {
       this.isEdit = true;
       this.$refs.editBox.focus();
     },
     closeEdit: function closeEdit(e) {
-      if (this.taskprops.taskName !== e.target.value) {
+      if (this.todo.taskName !== e.target.value) {
         this.changeTaskName(e);
       }
       this.isEdit = false;
@@ -428,22 +429,21 @@ _vue2.default.component('task-item', {
       var text = e.target.value;
       console.log('changeTask', text);
       if (text) {
-        this.taskprops.taskName = text;
+        this.todo.taskName = text;
       }
     },
     deleteTask: function deleteTask(index) {
       console.log('削除する', index);
-      console.log(this.taskprops);
-      this.taskprops.splice(index);
+      console.log(this.todo);
+      this.todo.splice(index);
     }
   }
 });
 
 // ------------------------------------------------
 new _vue2.default({
-  el: '#apptodolist',
+  el: '#app',
   data: {
-    searchVal: '',
     todos: [{
       id: '0001',
       taskName: '未完了のタスク',
@@ -465,6 +465,29 @@ new _vue2.default({
       isDone: true,
       isMust: true
     }]
+  },
+  methods: {
+    addTodos: function addTodos() {
+      // this.todos: [
+      //   // オブジェクトの配列を展開して1つ1つの要素の値を変更する
+      //   ...this.todos,
+      //   {
+      //     id: action.id, //actionで定義したidプロパティの値を取得
+      //     taskName: action.taskName, //actionで定義したtaskNameプロパティの値を取得
+      //     isDone: false,
+      //     isMust: false
+      //   }
+      // ]
+    },
+    updateTodos: function updateTodos() {},
+    removeTodos: function removeTodos() {},
+    toggleDone: function toggleDone(id) {
+      console.log('親のtoggleDone', id);
+
+      this.todos.toggleDone = !this.todos.toggleDone;
+    },
+    toggleMust: function toggleMust() {}
+
   }
 
 });

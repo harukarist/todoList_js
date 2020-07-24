@@ -10,7 +10,8 @@
 
 <body>
   <div class="main">
-    <div id="apptodolist">
+
+    <div id="app">
 
       <section class="heading">
         <h1 class="heading__mainTitle">Todo List</h1>
@@ -31,10 +32,10 @@
       <!-- ToDoリスト -->
       <section class="section__todoList">
         <ul class="todoList">
-          <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :taskprops="todo"></task-item>
+          <task-item v-for="todo in todos" :key="todo.id" :class="{task__isMust: todo.isMust=true}" :todo="todo" @clicked-toggle-done="toggleDone(todo.id)"></task-item>
         </ul>
         <ul class="todoList">
-          <task-item v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :taskprops="todo"></task-item>
+          <task-item v-for="todo in todos" v-if="!todo.isMust" :key="todo.id" :todo="todo"></task-item>
         </ul>
       </section>
     </div>
