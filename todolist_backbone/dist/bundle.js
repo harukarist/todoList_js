@@ -14919,7 +14919,7 @@ var TaskView = Backbone.View.extend({
   initialize: function () {
     console.log('TaskView initialize');
     // underscoreのbindAll()でthisを縛る
-    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'checkKeyDown','checkKeyUp');
+    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'checkKeyDown', 'checkKeyUp');
     // モデルのデータが変わったら、renderメソッドを呼び出して画面に表示
     this.model.bind('change', this.render);
     // モデルが削除されたら、removeメソッドを呼び出し
@@ -14947,10 +14947,10 @@ var TaskView = Backbone.View.extend({
   },
   toggleMust: function () {
     console.log('TaskView toggleMust');
-    // ！でisDoneの値を反転させる
+    // ！でisMustの値を反転させて、リストインスタンスの末尾にモデルを追加
     this.model.set({ isMust: !this.model.get('isMust') });
-    // リストインスタンスの末尾にモデルを追加
     ListViewInstance.appendItem(this.model);
+    // 元のデータは削除
     this.$el.remove();
   },
   showEdit: function () {
@@ -14979,12 +14979,13 @@ var TaskView = Backbone.View.extend({
   render: function () {
     // ログを出力
     console.log('TaskView render');
-    console.log('modelをテンプレートに入れる:', this.model.attributes);
-    // テンプレートを取得して変数に格納
+    console.log('model.attributesをテンプレートに入れる:', this.model.attributes);
+    // テンプレートを取得して変数に格納し、this.$elに.html()で書き換えて入れる
     // this.model.attributes でモデルのデータをオブジェクト形式（連想配列）で渡すことができる
     var template = this.template(this.model.attributes);
-    // this.$elに.html()で書き換えて入れる
     this.$el.html(template);
+    // このViewではelを指定していないため、divタグのDOMが生成される。
+    // this.$el.html()とすると、空のdivタグの中にテンプレートのliタグが作られる。
 
     // タスクのソート
     // this.$el.children('.js-sortable').sortable({ axis: 'y' });
@@ -14993,9 +14994,6 @@ var TaskView = Backbone.View.extend({
     return this;
     // renderメソッドは最後に return this; をつける
     // return thisで自分自身への参照を返すことで、呼び出し元でメソッドチェーンを使うことが出来る
-
-    // このViewではelを指定していないため、divタグのDOMが生成される。
-    // this.$el.html()とすると、空のdivタグの中にテンプレートのliタグが作られる。
   }
 });
 
@@ -15024,14 +15022,14 @@ var ListView = Backbone.View.extend({
     this.collection.add(TaskModelInstance);
     // initializeプロパティのaddイベントが発生し、this.appendItemメソッドでモデルと連携して個々のタスクのビューが生成される
   },
-  // コレクションにモデルが追加されたらappendItemメソッドでタスクを追加
+  // コレクションにモデルが追加されたらタスクビュークラスにモデルを渡してタスクのインスタンスを生成
   appendItem: function (model) {
     console.log('ListView appendItem');
-    console.log('modelからタスクのインスタンスを作る', model);
-    // モデルを引数で受け取ってタスクのビュークラスにモデルを連携してデータを渡し、タスクのチケットを作る（ビューとモデルの連携）
+    console.log('modelをタスクビューに渡してインスタンス生成し、ulタグにappend()', model);
+    // タスクのチケットを作る（ビューとモデルの連携）
     var TaskViewInstance = new TaskView({ model: model });
-    // viewで生成されたエレメントをrender().elで取得し、
-    // 親のthis.$elのulタグにappend()してタスクを追加する
+    // タスクのビューインスタンスで生成された要素をrender().elで取得して
+    // 親要素this.$elのulタグにappend()してタスクを追加する
     // 重要フラグの値によって、追加先のDOMを変える
     if (model.attributes.isMust) {
       this.$el.children('.js-todoList-must').append(TaskViewInstance.render().el);
@@ -15043,7 +15041,7 @@ var ListView = Backbone.View.extend({
   searchItem: function (searchText) {
     console.log('ListView searchItem');
     console.log('searchText', searchText);
-    // underscoreのメソッドeach()でコレクションに紐づいたモデルを1つ1つ呼び出し
+    // each()でコレクションに紐づいたモデルを1つ1つ呼び出し
     // each(function(第一引数にモデル、第二引数にループの順番i))
     this.collection.each(function (model, i) {
       // console.log('model', model);
