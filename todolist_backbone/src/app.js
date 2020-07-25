@@ -6,52 +6,48 @@
 var Backbone = require('../node_modules/backbone/backbone');
 var $ = require('../node_modules/jquery/dist/jquery');
 var _ = require('../node_modules/underscore/underscore');
-// browserifyで1つに固める
-// gulpでbrowserifyを使うにはvinyl-source-streamを使う
 
 //=============================================
 // Model
 //=============================================
-
-// ------------------------
 // タスクのモデル
 var TaskModel = Backbone.Model.extend({
   defaults: {
-    // モデルで使うプロパティを定義しておく
-    taskName: '',　//タスク名
-    isDone: false, //タスクが終わっているかフラグ
-    editMode: false, //編集中フラグ
-    isHide: false, //非表示フラグ
-    isMust: false //重要フラグ
+    // モデルで使うプロパティを定義
+    taskName: '',
+    isDone: false,
+    editMode: false,
+    isHide: false,
+    isMust: false,
+    keyDownCode: ''
   }
 });
 
-// ------------------------
 // 入力フォームのモデル
 var FormModel = Backbone.Model.extend({
   defaults: {
-    formVal: '', //入力された値
-    hasError: false, //エラーフラグ
-    errorMsg: '' //エラーメッセージ
+    formVal: '',
+    hasError: false,
+    errorMsg: '',
+    keyDownCode: ''
   },
+
   // initializeプロパティ
-  // newした時に最初に呼ばれる処理を initializeプロパティ、constructorプロパティで定義
-  // 両方定義する場合はinitializeの後にconstructor
+  // newでインスタンス化した時に最初に呼ばれる処理
   // https://backbonejs.org/#Model-constructor
   // initialize: function (attrs, options) {
-  //   // new Model([attributes], [options])
   //   // attributesはDBに保存する情報
   //   // optionsはjsの中だけで使う情報
   // },
 
-  // ＃validateプロパティ
+  // validateプロパティ
   // https://backbonejs.org/#Model-validate
   validate: function (attrs) {
     // ビュー側のFormViewでthis.model.set()するとvalidateが実行される
     console.log('FormModel validate');
     console.dir(attrs);
 
-    // ＃引数で渡されたattrs（errorMsg,formVal,hasErrorプロパティを持つオブジェクト形式）をバリデーションチェック
+    // 引数で渡されたattrs（errorMsg,formVal,hasErrorを持つオブジェクト）をバリデーションチェック
     if (!attrs.formVal || attrs.formVal.length === 0) {
       console.log("入力なし");
       return "タスクを入力してください";
@@ -62,10 +58,11 @@ var FormModel = Backbone.Model.extend({
     }
   }
 });
+// インスタンス生成
 var FormModelInstance = new FormModel();
 
-// ------------------------
-// ＃検索エリアのモデル
+
+// 検索エリアのモデル
 var SearchModel = Backbone.Model.extend({
   defaults: {
     searchVal: '',
@@ -73,15 +70,14 @@ var SearchModel = Backbone.Model.extend({
 });
 var SearchModelInstance = new SearchModel();
 
+
 //=============================================
 // Collection
 //=============================================
-// CollectionはModelを複数扱うためのオブジェクト
-// Backboneにコントローラはない
-
-// コレクションTaskCollection
+// Modelを複数扱うためのオブジェクト
+// Taskのコレクション
 var TaskCollection = Backbone.Collection.extend({
-  // タスクのモデル（設計図）をコレクションのmodelプロパティに渡す
+  // タスクのモデルをコレクションのmodelプロパティに渡す
   model: TaskModel
 });
 // モデルをインスタンス化
@@ -90,28 +86,14 @@ var SampleTask2 = new TaskModel({ taskName: 'todo2' });
 var SampleTask3 = new TaskModel({ taskName: 'todo3 must', isMust: 'true' });
 var SampleTask4 = new TaskModel({ taskName: 'todo4 must', isMust: 'true' });
 
-// コレクションをインスタンス化
-// 配列形式でインスタンス化したモデルを渡す
+// コレクションをインスタンス化（配列形式でインスタンス化したモデルを渡す）
 var TaskCollectionInstance = new TaskCollection([SampleTask1, SampleTask2, SampleTask3, SampleTask4]);
 // var TaskCollectionInstance = new TaskCollection();
-
-// // プロパティに値を入れてコレクションに渡す場合
-// var TaskCollectionInstance2 = new TaskCollection([{ taskName: 'todo3' }, { taskName: 'todo4' }]);
-
-// // underscoreのメソッドeach（for〜loopのようなもの）
-// // 第一引数に配列それぞれのアイテム（モデル）、第二引数にループの順番i
-// TaskCollectionInstance.each(function (e, i) {
-//   // モデルのgetメソッドでタスク名を取得
-//   console.log('[' + i + '] ' + e.get('taskName'));
-// });
-
 
 
 //=============================================
 // View
 //=============================================
-
-var keyDownCode = 0;
 
 // タスクのビュー
 var TaskView = Backbone.View.extend({
@@ -124,18 +106,14 @@ var TaskView = Backbone.View.extend({
     'click .js-toggle-must': 'toggleMust', //スターアイコンをクリックした時
     'click .js-todoList-taskName': 'showEdit', //タスク名をクリックした時
     'blur .js-todoList-editName': 'closeEdit', //編集ボックスのフォーカスが外れた時
-    // 'keydown .js-todoList-editName': 'watchEdit', //編集ボックスでkeydownした時
+    'keydown .js-todoList-editName': 'checkKeyDown', //編集ボックスでkeydownした時
     'keyup .js-todoList-editName': 'checkKeyUp' //編集ボックスでkeyupした時
   },
-  // 初期化（initialize）
-  // newでインスタンス化するとinitializeが最初に必ず呼ばれる
+
   initialize: function () {
     console.log('TaskView initialize');
-    // _.bindAllでthisを縛る
-    // ※メソッドを増やす時は、bindAll()にも追加してthisを縛る！
-    // _.bindAll(this, 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'watchEdit', 'closeEdit');
-    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'checkKeyUp');
-
+    // underscoreのbindAll()でthisを縛る
+    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'checkKeyDown','checkKeyUp');
     // モデルのデータが変わったら、renderメソッドを呼び出して画面に表示
     this.model.bind('change', this.render);
     // モデルが削除されたら、removeメソッドを呼び出し
@@ -162,9 +140,10 @@ var TaskView = Backbone.View.extend({
     return this;
   },
   toggleMust: function () {
+    console.log('TaskView toggleMust');
     // ！でisDoneの値を反転させる
     this.model.set({ isMust: !this.model.get('isMust') });
-    console.log('TaskView toggleMust');
+    // リストインスタンスの末尾にモデルを追加
     ListViewInstance.appendItem(this.model);
     this.$el.remove();
   },
@@ -178,17 +157,17 @@ var TaskView = Backbone.View.extend({
     // this.model.setでモデルのtaskNameプロパティを変更
     this.model.set({ taskName: e.currentTarget.value, editMode: false });
   },
+  checkKeyDown: function (e) {
+    // console.log('TaskView checkKeyDown', e.keyCode);
+    this.model.set({ keyDownCode: e.keyCode })
+  },
   checkKeyUp: function (e) {
     console.log('TaskView checkKeyUp');
-    // Enterキーが２回押された時
-    if (e.keyCode === 13 && e.keyCode === prevKey) {
-      // this.model.setでモデルのtaskNameプロパティを変更
-      // this.model.set({ taskName: e.currentTarget.value, editMode: false });
+    // Enterキーが押された時（日本語入力確定後）
+    if (e.keyCode === 13 && e.keyCode === this.model.get('keyDownCode')) {
+      // モデルのtaskNameプロパティを変更
       this.model.set({ taskName: e.currentTarget.value, editMode: false });
-      // e.currentTarget.valueでinputに入力された文字列を取得してtaskNameプロパティにセットして、
-      // editModeをfalseに変更して編集モードを終了
     }
-    prevKey = e.keyCode;
   },
   // renderメソッド
   render: function () {
@@ -206,10 +185,11 @@ var TaskView = Backbone.View.extend({
     // this.$el.sortable({ axis: 'y' });
 
     return this;
-    // renderメソッドは最後に return this; をつけるのが慣し
+    // renderメソッドは最後に return this; をつける
     // return thisで自分自身への参照を返すことで、呼び出し元でメソッドチェーンを使うことが出来る
 
-    // このViewではelを指定していないため、divタグのDOMが生成される。this.$el.html()とすると、空のdivタグの中にテンプレートのliタグが作られる。
+    // このViewではelを指定していないため、divタグのDOMが生成される。
+    // this.$el.html()とすると、空のdivタグの中にテンプレートのliタグが作られる。
   }
 });
 
@@ -223,22 +203,18 @@ var ListView = Backbone.View.extend({
   collection: TaskCollectionInstance,
   initialize: function () {
     console.log('ListView initialize');
-    // bindAllでthisを縛る
     _.bindAll(this, 'render', 'addItem', 'appendItem', 'searchItem');
-    // コレクションにモデルが追加'add'されたらappendItemメソッドを呼び出し
+    // コレクションにモデルが追加されたらappendItemメソッドを呼び出し
     this.collection.bind('add', this.appendItem);
-    // 1つ1つのタスク表示用のビューでは this.model.bind だったが
-    // この親ビューでは this.collection.bind を使う
-    // 最初にビューを表示する時にrenderを呼び出し
+    // 初期表示時にrenderを呼び出し
     this.render();
-
   },
-  // タスクを追加するaddItemメソッド
+  // タスクを追加するメソッド
   addItem: function (text) {
     console.log('ListView addItem');
     // タスクの文字列を引数で受けとり、モデルを作る
     var TaskModelInstance = new TaskModel({ taskName: text });
-    // そのモデルを、ビューに紐づいているコレクションにaddで追加
+    // そのモデルを、ビューに紐づいているコレクションにadd()で追加
     this.collection.add(TaskModelInstance);
     // initializeプロパティのaddイベントが発生し、this.appendItemメソッドでモデルと連携して個々のタスクのビューが生成される
   },
@@ -320,29 +296,31 @@ var FormView = Backbone.View.extend({
   //イベント
   events: {
     'click .js-add-todo': 'addTodo', //追加ボタンがクリックされたらaddTodoメソッドを呼び出し
-    // 'keydown .js-todoList-editName': 'watchEdit', //編集ボックスでkeydownした時
-    'keyup .js-form-val': 'checkKeyup' //編集ボックスでkeyupした時
+    'keydown .js-form-val': 'checkKeyDown', //編集ボックスでkeyupした時
+    'keyup .js-form-val': 'checkKeyUp' //編集ボックスでkeyupした時
   },
   // initialize
   initialize: function () {
     console.log('FormView initialize');
     // bindAllでthisを縛る
-    _.bindAll(this, 'render', 'addTodo', 'checkKeyup');
+    _.bindAll(this, 'render', 'addTodo', 'checkKeyUp', 'checkKeyDown');
     // モデルに変更があったらrenderを呼び出し(changeはbackboneで用意されているイベント)
     this.model.bind('change', this.render);
     // 初期表示時もrenderを呼び出して表示
     this.render();
   },
 
-  // Enterが２回押されたらaddTodoメソッドを呼び出す
-  checkKeyup: function (e) {
-    console.log('FormView checkKeyup');
-    console.log('e.keyCode', e.keyCode);
-    if (e.keyCode === 13 && e.keyCode === prevKey) {
+  checkKeyDown: function (e) {
+    // console.log('FormView checkKeyDown', e.keyCode);
+    this.model.set({ keyDownCode: e.keyCode })
+  },
+  checkKeyUp: function (e) {
+    console.log('FormView checkKeyUp');
+    // Enterキーが押された時（日本語入力確定後）
+    if (e.keyCode === 13 && e.keyCode === this.model.get('keyDownCode')) {
+      // addTodoメソッドを呼び出す
       this.addTodo(e);
     }
-    prevKey = e.keyCode;
-    console.log('prevKey', prevKey);
   },
 
   // 追加ボタンが押された時のaddTodoメソッド

@@ -3,13 +3,13 @@
 // タスク追加
 $('.js-add-todo').on('click', addTask);
 
-var keyDownCode = 0;
 $('.js-form-val').keydown(function (e) {
   // 押されたキーコードを保存
   keyDownCode = e.keyCode;
 });
 $('.js-form-val').keyup(function (e) {
-  // 日本語入力確定後にEnterキーが押された場合
+  // keyupもkeydownも13の場合(日本語入力確定後にEnterキーが押された場合)
+  // 日本語確定Enterのkeydownは229
   if (e.keyCode === 13 && e.keyCode === keyDownCode) {
     addTask();
   }
@@ -19,18 +19,15 @@ function addTask(e) {
   // 入力フォームの値を取得して変数に格納し、中身を空にする
   var taskName = $('.js-form-val').val();
   $('.js-form-val').val('');
-
   // 入力が空の場合は .show()でエラーメッセージを表示し、その後の処理を行わない
   if (!taskName) {
     $('.js-toggle-error').show();
     return;
   }
-
   // タスクが入力されている場合は .hide()でエラーメッセージを隠す
   $('.js-toggle-error').hide();
 
   // リスト表示用のhtmlタグを生成
-  // 【TODO】ES6のテンプレートリテラルを使う！
   var listItem = '<li class="todoList__item js-todoList-item" data-task-name="' + taskName + '">' +
     '<i class="far fa-star icon-star js-click-to-must" aria-hidden="true"></i>' +
     '<i class="far fa-square icon-checkbox js-click-to-done" aria-hidden="true"></i>' +
@@ -68,6 +65,7 @@ $(document).on('click', '.js-click-to-must', function () {
   $(this).removeClass('far').addClass('fas')
     .removeClass('js-click-to-must').addClass('js-click-to-normal');
   var $listItem = $(this).closest('.js-todoList-item');
+  // 子要素の先頭に移動
   $listItem.animate(300, 'swing', function () {
     $listItem.addClass('todoList__item--must');
     $listItem.prependTo('.js-todoList-must');
@@ -115,6 +113,8 @@ $(document).on('keydown', '.js-todoList-editName', function (e) {
   keyDownCode = e.keyCode;
 });
 $(document).on('keyup', '.js-todoList-editName', function (e) {
+  // keyupもkeydownも13の場合(日本語入力確定後にEnterキーが押された場合)
+  // 日本語確定Enterのkeydownは229
   if (e.keyCode === 13 && e.keyCode === keyDownCode) {
     var $this = $(this);
     editTask($this);
