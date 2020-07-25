@@ -1,4 +1,8 @@
 //プラグインの読み込み
+// browserifyでファイル結合
+// browser-syncでブラウザリロード
+// vinyl-source-streamはgulpでbrowserifyを使うのに必要
+
 var gulp = require('gulp');
 var browserify = require('browserify');
 var browserSync = require('browser-sync').create();
