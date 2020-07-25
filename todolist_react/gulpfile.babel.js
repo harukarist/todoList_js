@@ -23,18 +23,22 @@ gulp.task('build', function (done) {
     .pipe(gulp.dest('dist/js/'));
   done();
 });
-gulp.task('browser-sync', function () {
+gulp.task('browser-sync', function (done) {
   browserSync.init({
     server: {
       baseDir: "./", // 対象ディレクトリ
       index: "index.html" //indexファイル名
     }
   });
+  done();
+
 });
 gulp.task('bs-reload', function (done) {
   browserSync.reload();
   done();
 });
+
+// ESLint
 gulp.task('eslint', function () {
   return gulp.src(['src/**/*.js']) // lint のチェック先を指定
     .pipe(plumber({
