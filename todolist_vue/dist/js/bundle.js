@@ -295,164 +295,222 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 // ------------------------------------------------
 // タスク登録コンポーネント
-// Vue.component('todo-creator', {
-//   props: {
-//     listprops: Array
-//   },
-//   // props: ['listprops'],
-//   data: function () {
-//     return {
-//       inputVal: '',
-//       errMsg: ''
-//     }
-//   },
-//   template:
-//     `
-//     <div class="formArea">
-//       <div class="entryBox">
-//         <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="inputVal" placeholder="タスクを入力" @keydown.13="addTask">
-//         <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>
-//       </div>
-//       <span class="formArea__is-error">{{ errMsg }}</span>
-//     </div>
-//   `,
-//   methods: {
-//     createHashId: function () {
-//       return Math.random().toString(36).slice(-16);
-//       // 【TODO】完全に一意にする
-//     },
-//     addTask: function () {
-//       // v-modelの値を取得
-//       let text = this.inputVal
-//       if (!text) {
-//         console.log('err')
-//         this.errMsg = 'タスクを入力してください'
-//       } else {
-//         this.listprops.push({
-//           id: this.createHashId(),
-//           taskName: text,
-//           isDone: false,
-//           isMust: false
-//         })
-//         this.inputVal = ''
-//         this.errMsg = ''
-//         console.log('listprops', this.listprops)
-//       }
-//       // 入力フォームにフォーカス(ref属性がinputBoxのDOM)
-//       this.$refs.inputBox.focus();
-//     }
-//   },
-// })
+_vue2.default.component('todo-creator', {
+  props: {
+    propsarr: Array
+  },
+  // props: ['propsarr'],
+  data: function data() {
+    return {
+      value: '',
+      errMsg: ''
+    };
+  },
+  template: '\n    <div class="formArea">\n      <div class="entryBox">\n        <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="value" placeholder="\u30BF\u30B9\u30AF\u3092\u5165\u529B" @keydown.13="addTask">\n        <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>\n      </div>\n      <span class="formArea__is-error">{{ errMsg }}</span>\n    </div>\n  ',
+  computed: {
+    pushedArr: {
+      // 子のcomputedの中で親のpropsを受け取り、変更を$emitで親に通知する
+      // getter/setterを上書き
+      get: function get() {
+        return this.propsarr;
+      },
+      set: function set(value) {
+        this.$emit('input-propsarr', value);
+      }
+    }
+  },
+  methods: {
+    createHashId: function createHashId() {
+      return Math.random().toString(36).slice(-16);
+      // 【TODO】完全に一意にする
+    },
+    saveKeyDown: function saveKeyDown(e) {
+      // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
+      this.keyDownCode = e.keyCode;
+      console.log('keyDown', this.keyDownCode);
+    },
+    checkKeyUp: function checkKeyUp(e) {
+      console.log('keyUp', e.keyCode);
+      // Enterキーが押された時（日本語入力確定後）
+      if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
+        this.addTask(e);
+      }
+      this.isEdit = false;
+    },
+    addTask: function addTask(e) {
+      // let text = e.currentTarget.value
+      // let text = e.target.value
+      // v-modelの値を取得
+      var text = this.value;
+      console.log('addTask', text);
+      if (!text) {
+        console.log('err');
+        this.errMsg = 'タスクを入力してください';
+        return;
+      } else {
+        // computedの配列にオブジェクトを追加
+        this.pushedArr.push({
+          id: this.createHashId(),
+          taskName: text,
+          isDone: false,
+          isMust: false,
+          isShow: true
+        });
+        this.value = '';
+        this.errMsg = '';
+        console.log('pushedArr', this.pushedArr);
+      }
+      // 入力フォームにフォーカスを戻す(ref="inputBox"のDOMにfocus)
+      this.$refs.inputBox.focus();
+    }
+  }
+});
 // ------------------------------------------------
 // タスク絞り込みコンポーネント
-// Vue.component('task-search', {
-//   props: {
-//     listprops: Array
-//   },
-//   data: function () {
-//     return {
-//       searchVal: '',
-//     }
-//   },
-//   template:
-//     `
-//     <div class="searchBox">
-//       <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..." @keyup="searchTasks">
-//       <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
-//     </div>
-//   `,
-//   methods: {
-//     filterTasks: function (elm) {
-//       // 第二引数の'i'は「大文字・小文字を区別しない」オプション
-//       const regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i')
-//       console.log('filterTasks', this.searchVal)
-//       console.log('elm', elm)
-//       console.log(elm.taskName.match(regexp))
-//     },
-//     searchTasks: function () {
-//       // console.log(this.searchVal)
-//       // console.log(this.listprops)
-//       return {
-//         todos: (this.searchVal) ? this.listprops.filter(this.filterTasks(this.listprops)) : this.listprops
-//       }
-//     },
-//   }
-
-// })
-
-// ------------------------------------------------
-// タスク表示コンポーネント
-// html側から <task-item v-for="todo in todos" v-if="todo.isMust" :key="todo.id" :todo="todo"></task-item> で呼び出し
-_vue2.default.component('task-item', {
+_vue2.default.component('task-search', {
+  // props: ['propsarr'],
   props: {
-    todo: Object
+    propsarr: Array
   },
   data: function data() {
     return {
-      isEdit: false
+      searchVal: '',
+      // data内で最初の配列を保存
+      originalArr: this.propsarr
     };
   },
-  // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
-  template: '\n  <li :class="classTaskItem" class="todoList__item">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ todo.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>\n  </li>\n  ',
+  template: '\n    <div class="searchBox">\n      <input type="text" class="searchBox__input" value="" placeholder="Search..." @keyup="searchTasks($event)">\n      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>\n    </div>\n  ',
+  computed: {
+    resultArr: {
+      // 子のcomputedの中で親のpropsを受け取り、変更を$emitで親に通知する
+      // getter/setterを上書き
+      get: function get() {
+        return this.propsarr;
+      },
+      set: function set(value) {
+        this.$emit('update-propsarr', value);
+      }
+    }
+  },
+  methods: {
+    filterTasks: function filterTasks(elm) {
+      // 第二引数の'i'は「大文字・小文字を区別しない」オプション
+      var regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i');
+      console.log('match()', elm.taskName.match(regexp));
+      // 引数の各要素について、regexpとマッチするものだけ返す
+      return elm.taskName.match(regexp);
+    },
+    searchTasks: function searchTasks(e) {
+      this.searchVal = e.target.value;
+      console.log('this.searchVal', this.searchVal);
+      if (this.searchVal) {
+        // data内で最初の配列を保存
+        console.log('this.originalArr', this.originalArr);
+        console.log('this.propsArr', this.propsArr);
+        // 配列の各要素について、filter()で絞り込んで新しい配列を生成
+        this.resultArr = this.originalArr.filter(this.filterTasks);
+        console.log('this.resultArr', this.resultArr);
+      } else {
+        // 検索ボックスの値が削除されたら元の配列を表示
+        console.log('originalArr', this.originalArr);
+        this.resultArr = this.originalArr;
+      }
+    }
+  }
+});
+
+// ------------------------------------------------
+// タスク表示コンポーネント
+// html側のタグ
+// <task-item v-for="todo in todos" :key="todo.id" :value="todo" @toggle-done="todo = $event" @toggle-must="todo = $event" @change-task-name="todo = $event" @delete-task="todo = $event"></task-item>
+
+_vue2.default.component('task-item', {
+  // props名は小文字のみOK
+  // html側でもケバブチェーン不可
+  // props: ['propsobj'],
+  props: {
+    propsobj: Object
+  },
+  data: function data() {
+    return {
+      isEdit: false,
+      keyDownCode: ''
+    };
+  },
+  template: '\n  <transition name="slide-fade">\n  <li v-show="propsobj.isShow" :class="classTaskItem" class="todoList__item">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ propsobj.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit">\n      <input type="text" class="todoList__editBox" :value="propsobj.taskName" ref="editBox" @change="changeTaskName($event)" @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)" @blur="changeTaskName($event)"></span>\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>\n    </li>\n    </transition>\n  ',
 
   computed: {
     classTaskItem: function classTaskItem() {
       return {
-        'todoList__item--done': this.todo.isDone,
-        'todoList__item--must': this.todo.isMust
+        'todoList__item': true,
+        'todoList__item--done': this.propsobj.isDone,
+        'todoList__item--must': this.propsobj.isMust
+        // 'todoList__item--deleted': !this.propsobj.isShow,
       };
     },
     classCheckBox: function classCheckBox() {
       return {
         'far': true,
-        'fa-check-square': this.todo.isDone,
-        'fa-square': !this.todo.isDone,
+        'fa-check-square': this.propsobj.isDone,
+        'fa-square': !this.propsobj.isDone,
         'icon-checkbox': true
       };
     },
     classMustIcon: function classMustIcon() {
       return {
-        'fas': this.todo.isMust,
-        'far': !this.todo.isMust,
+        'fas': this.propsobj.isMust,
+        'far': !this.propsobj.isMust,
         'fa-star': true,
         'icon-star': true
       };
+    },
+    localObj: {
+      // 子のcomputedでgetter/setterを上書き
+      // 親のpropsを受け取り、変更を$emitで通知する
+      get: function get() {
+        return this.propsobj;
+      },
+      set: function set(value) {
+        this.$emit('update-props', value);
+      }
     }
   },
   methods: {
+    // 子ではpropsを直接操作せず、computed(localObj)の値を変更する
     toggleDone: function toggleDone() {
-      this.todo.isDone = !this.todo.isDone;
-      console.log('子コンポーネントでtoggleDone', this.todo.id, this.todo.isDone);
-      this.$emit('clicked-toggle-done', this.todo.id, this.todo.isDone);
+      this.localObj.isDone = !this.propsobj.isDone;
     },
     toggleMust: function toggleMust() {
-      this.todo.isMust = !this.todo.isMust;
-      console.log('this.todo.isMust', this.todo.isMust);
-      this.$emit('clicked-toggle-must', this.todo.id, this.todo.isMust);
+      this.localObj.isMust = !this.propsobj.isMust;
     },
     focusEdit: function focusEdit() {
       this.isEdit = true;
-      this.$refs.editBox.focus();
     },
-    closeEdit: function closeEdit(e) {
-      if (this.todo.taskName !== e.target.value) {
+    saveKeyDown: function saveKeyDown(e) {
+      // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
+      this.keyDownCode = e.keyCode;
+      console.log('keyDown', this.keyDownCode);
+    },
+    checkKeyUp: function checkKeyUp(e) {
+      console.log('keyUp', e.keyCode);
+      // Enterキーが押された時（日本語入力確定後）
+      if (e.keyCode === 13) {
+        // if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
         this.changeTaskName(e);
       }
       this.isEdit = false;
     },
     changeTaskName: function changeTaskName(e) {
-      var text = e.target.value;
-      console.log('changeTask', text);
+      var text = e.currentTarget.value;
       if (text) {
-        this.todo.taskName = text;
-        this.$emit('change-task-name', this.todo.id, this.todo.taskName);
+        this.localObj.taskName = text;
+        console.log('changeTask', text);
       }
+      this.isEdit = false;
     },
     deleteTask: function deleteTask() {
-      console.log('削除する');
-      console.log(this.todo.taskName);
-      this.todo.taskName = '';
-      this.$emit('delete-task', this.todo.id, this.todo.taskName);
+      this.localObj.isShow = false;
+      console.log('削除する', this.localObj);
     }
   }
 });
@@ -461,91 +519,58 @@ _vue2.default.component('task-item', {
 new _vue2.default({
   el: '#app',
   data: {
-    inputVal: '',
-    errMsg: '',
-    isEdit: false,
-    searchVal: '',
-
+    menuFlg: '',
     todos: [{
       id: '0001',
       taskName: '未完了のタスク',
       isDone: false,
-      isMust: false
+      isMust: false,
+      isShow: true
     }, {
       id: '0002',
       taskName: '終わったタスク',
       isDone: true,
-      isMust: false
+      isMust: false,
+      isShow: true
     }, {
       id: '0003',
       taskName: '未完了の大事なタスク',
       isDone: false,
-      isMust: true
+      isMust: true,
+      isShow: true
     }, {
       id: '0004',
       taskName: '終わった大事なタスク',
       isDone: true,
-      isMust: true
+      isMust: true,
+      isShow: true
     }]
   },
-  // -------------------------------------------
-  methods: {
-    createHashId: function createHashId() {
-      return Math.random().toString(36).slice(-16);
-      // 【TODO】完全に一意にする
-    },
-    addTask: function addTask() {
-      // v-modelの値を取得
-      var text = this.inputVal;
-      if (!text) {
-        // 
-        console.log('err');
-        this.errMsg = 'タスクを入力してください';
-        return;
-      } else {
-        this.todos.push({
-          // 【TODO】先頭にリストを追加
-          id: this.createHashId(),
-          taskName: text,
-          isDone: false,
-          isMust: false
-        });
-        this.inputVal = '';
-        this.errMsg = '';
-        console.log('todos', this.todos);
-      }
-      // 入力フォームにフォーカス(ref属性がinputBoxのDOM)
-      this.$refs.inputBox.focus();
-    },
-    searchTasks: function searchTasks() {
-      // console.log(this.searchVal)
-      this.filterTasks(this.todos);
-      // this.todos = (this.searchVal) ? this.todos.filter(this.filterTasks(this.todos)) : this.todos
-    },
-    filterTasks: function filterTasks(elm) {
-      // 第二引数の'i'は「大文字・小文字を区別しない」オプション
-      var regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i');
-      elm.forEach(function (todo) {
-        console.log('foreach', todo.taskName);
-      });
-      // return elm[0].taskName.match(regexp)
-    },
+  // computed: {
+  //   menuType: function () {
+  //     return this.menuFlg
+  //   },
+  // },
 
-    toggleDone: function toggleDone(id, flg) {
-      console.log('親のtoggleDone');
-      // this.todos[i].isDone = flg
-      // console.log('this.todos[i].taskName', this.todos[i].taskName)
+  methods: {
+    toggleShow: function toggleShow() {
+      this.isShow = !this.isShow;
     },
-    toggleMust: function toggleMust(id, isMust) {
-      // this.todos[i].isMust = isMust
-      // console.log('this.todos[i].taskName', this.todos[i].taskName)
+    // remove: function(index) {
+    //   this.todos.splice(index, 1)
+    // },
+
+    changeAll: function changeAll() {
+      this.menuFlg = '';
+      console.log(this.menuFlg);
     },
-    changeTaskName: function changeTaskName(id, taskName) {
-      // this.todos[i].taskName = taskName
+    changeMust: function changeMust() {
+      this.menuFlg = 'MUST';
+      console.log(this.menuFlg);
     },
-    deleteTask: function deleteTask(id, taskName) {
-      // console.log('削除する', index)
-      // console.log(this.todos[i].taskName)
+    changeSmall: function changeSmall() {
+      this.menuFlg = 'SMALL';
+      console.log(this.menuFlg);
     }
   }
 

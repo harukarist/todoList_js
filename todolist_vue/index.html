@@ -21,50 +21,85 @@
 
       <section class="section__todoCreator">
         <!-- 入力フォーム -->
-        <div class="formArea">
+        <todo-creator :propsarr="todos" @input-propsarr="todos = $event"></todo-creator>
+        <!-- <div class="formArea">
           <div class="entryBox">
-            <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="inputVal" placeholder="タスクを入力"
-              @keydown.13="addTask">
-            <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>
+            <input type="text" class="entryBox__input" value="" ref="inputBox" placeholder="タスクを入力"
+              @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)">
+            <button class="far fa-paper-plane entryBox__btn" @click="addTask($event)" aria-hidden="true"></button>
           </div>
-          <span class="formArea__is-error">{{ errMsg }}</span>
-        </div>
+          <span class="formArea__is-error">{{errMsg}}</span>
+        </div> -->
       </section>
 
       <!-- 検索ボックス -->
       <section class="section__searchBox">
-        <!-- <task-search :listprops="todos"></task-search> -->
-        <div class="searchBox">
+
+        <task-search :propsarr="todos" @update-propsarr="todos = $event"></task-search>
+
+        <!-- <div class="searchBox">
           <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..."
             @keyup="searchTasks">
           <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
-        </div>
+        </div> -->
       </section>
 
       <!-- ToDoリスト -->
       <section class="section__todoList">
-        <ul class="todoList">
-          <task-item v-for="(todo,index) in todos" :key="todo.id" :todo="todo" @clicked-toggle-done="toggleDone" @clicked-toggle-must="toggleMust" @change-task-name="changeTaskName" @delete-task="deleteTask"></task-item>
-        </ul>
-        <ul class="todoList">
-          <task-item v-for="(todo,index) in todos" v-if="!todo.isMust" :key="todo.id" :todo="todo" @clicked-toggle-done="toggleDone" @clicked-toggle-must="toggleMust" @change-task-name="changeTaskName" @delete-task="deleteTask"></task-item>
+
+        <!-- メニュー  -->
+        <ul class="todoList__menu">
+          <li @click="changeAll">すべて</li>
+          <li @click="changeMust">重要</li>
+          <li @click="changeSmall">スキマ時間</li>
         </ul>
 
-          <!-- <li v-for="(todo,index) in todos" v-if="todo.isMust" :key="todo.id" :todo="todo" :class="classTaskItem(index)"
-            class="todoList__item">
-            <i :class="classCheckBox(index)" @click="toggleDone(index)" aria-hidden="true"></i>
+        <!-- 子コンポーネントのテンプレート -->
+        <!-- v-forとv-modelは両立できない -->
+        <!-- NG <task-item v-for="todo in todos" :key="todo.id" v-model="todo"></task-item> -->
+
+        <ul class="todoList__list" v-if="menuFlg === 'MUST'">
+          <transition-group name="slide-fade">
+            <task-item v-for="todo in todos" :key="todo.id" v-if="todo.isMust" :propsobj="todo"
+              @update-props="todo = $event">
+            </task-item>
+          </transition-group>
+        </ul>
+
+        <ul class="todoList__list" v-else-if="menuFlg === 'SMALL'">
+          <transition-group name="slide-fade">
+            <task-item v-for="todo in todos" :key="todo.id" v-if="todo.isMust" :propsobj="todo"
+              @update-props="todo = $event">
+            </task-item>
+          </transition-group>
+        </ul>
+
+        <ul class="todoList__list" v-else>
+          <transition-group name="slide-fade">
+            <task-item v-for="todo in todos" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+            </task-item>
+          </transition-group>
+        </ul>
+
+        <!-- 子コンポーネントなし -->
+        <!-- <ul class="todoList">
+          <li v-for="(todo,index) in todos" :key="todo.id" :todo="todo" :class="classTaskItem">
+            <i :class="classCheckBox" @click="toggleDone(index)" aria-hidden="true"></i>
             <span v-show="!isEdit" class="todoList__taskName" 　@click="isEdit=true">{{ todo.taskName }}</span>
             <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit">
-              <input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox"
-                @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)">
+              <input type="text" class="todoList__editBox"  v-model="editVal=todo.taskName"
+                ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)"
+                @blur="closeEdit($event)">
             </span>
-            <i :class="classMustIcon(index)" @click="toggleMust" aria-hidden="true"></i>
-            <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>
-          </li> -->
+            <i :class="classMustIcon" @click="toggleMust(index)" aria-hidden="true"></i>
+            <i class="fas fa-trash-alt icon-trash" @click="deleteTask(index)" aria-hidden="true"></i>
+          </li>
+        </ul> -->
+
+
 
       </section>
     </div>
-
   </div>
   <script src="dist/js/bundle.js"></script>
 </body>

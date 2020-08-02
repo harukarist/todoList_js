@@ -1,3 +1,48 @@
+
+/* 表示・非表示アニメーション中 */
+.slide-fade-enter-active, .slide-fade-leave-active {
+  transition: all .5s ease-in-out;
+}
+/* 表示アニメーション開始時 */
+.slide-fade-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+/* 非表示アニメーション後 */
+.slide-fade-leave-to {
+  opacity: 0;
+  transform: translateX(10px);
+}
+
+
+
+/* 表示・非表示アニメーション中 */
+.test-enter-active, .test-leave-active {
+  transition: all .5s ease-in-out;
+  /* transform: translateX(10px); */
+}
+
+/* 表示アニメーション開始時 */
+.test-enter {
+  opacity: 0;
+  transform: translateX(10px);
+}
+/* 非表示アニメーション後 */
+.test-leave-to {
+  opacity: 0;
+  transform: translateX(10px);
+}
+/* 要素が移動する時に700msで移動するように指定 */
+/* .test-move {
+  transition: all 700ms;
+} */
+.test-leave-active {
+  transition: all 1s;
+  /* transform: translateX(10px); */
+  /* transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0); */
+}
+
+
 body {
   background: #0e2915;
   color: #BCBCBC;
@@ -20,9 +65,6 @@ body {
   max-width: 400px;
   box-sizing: border-box;
 }
-.section__todoList {
-  margin-bottom: 50px;
-}
 .heading {
   text-align: center;
 }
@@ -43,6 +85,10 @@ body {
   margin-bottom: 20px;
   text-align: right;
 }
+.formArea__is-error {
+  color: #B9CAE5;
+}
+
 .entryBox {
   width: 100%;
   margin-bottom: 5px;
@@ -93,9 +139,6 @@ body {
   transform: scale(1.1);
   color: #729e8a;
 }
-.formArea__is-error {
-  color: #B9CAE5;
-}
 
 .searchBox {
   width: 60%;
@@ -109,12 +152,18 @@ body {
   position: relative;
   border-bottom: 1px solid #505050;
   transition: .2s ease-in-out;
+  transform-origin: right;
 }
 .searchBox:hover {
   border-bottom: 1px solid #486b5b;
+  transform: scale(1.1);
+  color: #729e8a;
 }
 .searchBox:hover .searchBox__icon {
-  transform: scale(1.2);
+  transform: scale(1.2,1.2);
+  color: #729e8a;
+}
+.searchBox:hover .searchBox__input {
   color: #729e8a;
 }
 .searchBox__input {
@@ -124,12 +173,13 @@ body {
   box-sizing: border-box;
   padding: 5px 10px;
   font-size: 16px;
-  color: inherit;
   background: inherit;
   border: none;
+  color: #729e8a;
 }
 .searchBox__input:focus {
   outline: none;
+  color: #729e8a;
 }
 .searchBox__icon {
   font-size: 18px;
@@ -139,12 +189,45 @@ body {
   right: 10px;
 }
 
-.todoList {
+.section__todoList {
+  margin-bottom: 50px;
+}
+
+.todoList__menu {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  background: #242425;
+  display: flex;
+  /* align-items: center; */
+}
+
+.todoList__menu li {
+ width: calc(100% / 3);
+ text-align: center; 
+ color: #A5A5A5;
+ padding: 10px 0;
+ cursor: pointer;
+ 
+}
+.todoList__menu a {
+  width: auto;
+  text-decoration: none;
+  display: block;
+  transition: .2s ease-in-out;
+}
+.todoList__menu li:hover {
+  background: #4D4D4D;
+  transform: scale(1.02);
+}
+
+
+.todoList__list {
   list-style: none;
   padding: 0;
   margin: 10px 0 50px 0;
 }
-.todoList:empty {
+.todoList__list:empty {
   margin: 0;
 }
 
@@ -154,10 +237,10 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  transition: .2s ease-in-out transform;
+  /* transition: .2s ease-in-out transform; */
 }
 .todoList__item:hover {
-  transform: scale(1.02);
+  /* transform: scale(1.02); */
   /* color: #729e8a; */
   z-index: 2;
 }
@@ -185,6 +268,9 @@ body {
 .todoList__item--must {
   background: #4D4D4D;
 }
+/* .todoList__item--deleted {
+  display: none;
+} */
 
 .todoList__editArea {
   width: 250px;
@@ -244,29 +330,4 @@ body {
 .icon-trash {
   position: absolute;
   right: 20px;
-}
-
-
-
-
-.item-wrap {
-  list-style-type: none;
-  display: flex;
-  flex-wrap: wrap;
-  margin: 0;
-  padding: 0;
-}
-
-.item-wrap li {
-  padding: 1em;
-}
-
-.item-wrap img {
-  border-radius: 50%;
-}
-
-.total-count {
-  padding: 1em;
-  background-color: #222;
-  color: #fff;
 }
