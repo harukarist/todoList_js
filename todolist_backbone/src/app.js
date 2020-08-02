@@ -17,7 +17,7 @@ var TaskModel = Backbone.Model.extend({
     taskName: '',
     isDone: false,
     editMode: false,
-    isHide: false,
+    isShow: true,
     isMust: false,
     keyDownCode: ''
   }
@@ -106,14 +106,14 @@ var TaskView = Backbone.View.extend({
     'click .js-toggle-must': 'toggleMust', //スターアイコンをクリックした時
     'click .js-todoList-taskName': 'showEdit', //タスク名をクリックした時
     'blur .js-todoList-editName': 'closeEdit', //編集ボックスのフォーカスが外れた時
-    'keydown .js-todoList-editName': 'checkKeyDown', //編集ボックスでkeydownした時
+    'keydown .js-todoList-editName': 'saveKeyDown', //編集ボックスでkeydownした時
     'keyup .js-todoList-editName': 'checkKeyUp' //編集ボックスでkeyupした時
   },
 
   initialize: function () {
     console.log('TaskView initialize');
     // underscoreのbindAll()でthisを縛る
-    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'checkKeyDown', 'checkKeyUp');
+    _.bindAll(this, 'update', 'toggleDone', 'render', 'remove', 'toggleMust', 'showEdit', 'closeEdit', 'saveKeyDown', 'checkKeyUp');
     // モデルのデータが変わったら、renderメソッドを呼び出して画面に表示
     this.model.bind('change', this.render);
     // モデルが削除されたら、removeメソッドを呼び出し
@@ -157,8 +157,9 @@ var TaskView = Backbone.View.extend({
     // this.model.setでモデルのtaskNameプロパティを変更
     this.model.set({ taskName: e.currentTarget.value, editMode: false });
   },
-  checkKeyDown: function (e) {
-    // console.log('TaskView checkKeyDown', e.keyCode);
+  saveKeyDown: function (e) {
+    // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
+    // console.log('TaskView saveKeyDown', e.keyCode);
     this.model.set({ keyDownCode: e.keyCode })
   },
   checkKeyUp: function (e) {
@@ -238,21 +239,19 @@ var ListView = Backbone.View.extend({
     // each()でコレクションに紐づいたモデルを1つ1つ呼び出し
     // each(function(第一引数にモデル、第二引数にループの順番i))
     this.collection.each(function (model, i) {
-      // console.log('model', model);
-      console.log('taskName:', model.attributes.taskName);
       // モデルの属性からタスク名を取得
       var taskname = model.attributes.taskName;
       // 正規表現のオブジェクトを生成（部分一致）
       var regexp = new RegExp('^(?=.*' + searchText + ').*$');
       // match()で一致するかを判定
       if (taskname && taskname.match(regexp)) {
-        // 一致したら非表示フラグはOFF
-        model.set({ isHide: false });
-        console.log('isHide:', model.attributes.isHide);
+        // 一致したら表示フラグをON
+        model.set({ isShow: true });
+        // console.log('isShow:', model.attributes.isShow);
       } else {
-        // 一致しなかったら非表示フラグをON
-        model.set({ isHide: true });
-        console.log('isHide', model.attributes.isHide);
+        // 一致しなかったら表示フラグをOFF
+        model.set({ isShow: false });
+        // console.log('isShow', model.attributes.isShow);
       }
       return this;
     });
@@ -294,22 +293,22 @@ var FormView = Backbone.View.extend({
   //イベント
   events: {
     'click .js-add-todo': 'addTodo', //追加ボタンがクリックされたらaddTodoメソッドを呼び出し
-    'keydown .js-form-val': 'checkKeyDown', //編集ボックスでkeyupした時
+    'keydown .js-form-val': 'saveKeyDown', //編集ボックスでkeyupした時
     'keyup .js-form-val': 'checkKeyUp' //編集ボックスでkeyupした時
   },
   // initialize
   initialize: function () {
     console.log('FormView initialize');
     // bindAllでthisを縛る
-    _.bindAll(this, 'render', 'addTodo', 'checkKeyUp', 'checkKeyDown');
+    _.bindAll(this, 'render', 'addTodo', 'checkKeyUp', 'saveKeyDown');
     // モデルに変更があったらrenderを呼び出し(changeはbackboneで用意されているイベント)
     this.model.bind('change', this.render);
     // 初期表示時もrenderを呼び出して表示
     this.render();
   },
 
-  checkKeyDown: function (e) {
-    // console.log('FormView checkKeyDown', e.keyCode);
+  saveKeyDown: function (e) {
+    // console.log('FormView saveKeyDown', e.keyCode);
     this.model.set({ keyDownCode: e.keyCode })
   },
   checkKeyUp: function (e) {

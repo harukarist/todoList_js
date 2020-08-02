@@ -104,7 +104,8 @@ Vue.component('task-item', {
   <li :class="classTaskItem" class="todoList__item">
     <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>
     <span v-show="!isEdit" class="todoList__taskName"　@click="isEdit=true">{{ todo.taskName }}</span>
-    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit"><input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>
+    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit">
+    <input type="text" class="todoList__editBox" :value="todo.taskName" ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)" @blur="closeEdit($event)"></span>
     <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>
     <i class="fas fa-trash-alt icon-trash" @click="deleteTask(key)" aria-hidden="true"></i>
   </li>

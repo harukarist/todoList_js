@@ -35,16 +35,15 @@ function addTask(e) {
     '<input type="text" class="todoList__editBox js-todoList-editName" value="' + taskName + '">' +
     '<i class="fas fa-trash-alt icon-trash js-click-to-remove" aria-hidden="true"></i>' +
     '</li>';
-
   // ul要素のDOMを取得して、prepend()メソッドで子要素の先頭にリストを追加
   $('.js-todoList-normal').prepend(listItem);
 
 }
 
 
+// 後から追加した要素も対象となるよう、$(document).on() でイベントを作る
 // -----------------------------------------
 // タスクを完了に変更
-// $(document).on() で後から追加した要素も対象とする
 $(document).on('click', '.js-click-to-done', function () {
   $(this).removeClass('fa-square').addClass('fa-check-square')
     .removeClass('js-click-to-done').addClass('js-click-to-todo')
@@ -60,12 +59,12 @@ $(document).on('click', '.js-click-to-todo', function () {
 });
 
 // -----------------------------------------
-// タスクに重要チェックをつける
+// 通常の星アイコンをクリックしたら、重要アイコンに変更
 $(document).on('click', '.js-click-to-must', function () {
   $(this).removeClass('far').addClass('fas')
     .removeClass('js-click-to-must').addClass('js-click-to-normal');
+  // 親のli要素を取得してクラスを変更し、表示先のリストを移動
   var $listItem = $(this).closest('.js-todoList-item');
-  // 子要素の先頭に移動
   $listItem.animate(300, 'swing', function () {
     $listItem.addClass('todoList__item--must');
     $listItem.prependTo('.js-todoList-must');
@@ -74,10 +73,13 @@ $(document).on('click', '.js-click-to-must', function () {
 
 });
 // -----------------------------------------
-// タスクの重要チェックを外す
+// 重要アイコンをクリックしたら通常の星アイコンに変更
 $(document).on('click', '.js-click-to-normal', function () {
+  // 通常アイコンに変更
   $(this).removeClass('fas').addClass('far')
     .removeClass('js-click-to-normal').addClass('js-click-to-must');
+  // 
+  // 親のli要素を取得してクラスを変更し、表示先のリストを移動
   var $listItem = $(this).closest('.js-todoList-item');
   $listItem.animate(300, 'swing', function () {
     $listItem.removeClass('todoList__item--must');

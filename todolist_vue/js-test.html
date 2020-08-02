@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+</head>
+
+<body>
+  <div>
+    <ul>
+      <li data-team="A">Tom</li>
+      <li data-team="B">Bob</li>
+      <li data-team="C">Jane</li>
+    </ul>
+
+  </div>
+</body>
+<script>
+  // -------------------------------------
+  // 配列
+  const arr = ['Tom', 'Bob', 'Jane'];
+  console.log('arr ', arr);
+  console.log('arr[0] ', arr[0]);
+
+  // 追加
+  arr[3] = 'Mary';
+  arr[arr.length] = 'Yuka';
+  // arr[] = 'Ken'はNG
+  arr.push('Ken');
+
+  // 更新
+  arr[0] = 'Monster';
+
+  // ループ
+  for (var i = 0; i < arr.length; i++) {
+    console.log(arr[i]);
+  }
+  arr.forEach(function (elm, i, arr) {
+    console.log(arr[i] + elm);
+  });
+
+  // jQuery.each
+  $.each(arr, function (i, val) {
+    console.log('each(i,val) ', i, val)
+  });
+
+  // -------------------------------------
+  // 連想配列
+  const obj = {
+    name: 'Tom',
+    age: 25,
+  };
+  console.log('obj.name ', obj.name);
+  console.log('obj["name"] ', obj['name']);
+  // console.log('obj[0]はNG ', obj[0]);
+
+  // 追加
+  obj.gender = 'male';
+  obj['hobby'] = 'running';
+  // obj.push({ hobby: 'running' })はNG
+
+  // 変更
+  obj.age = 40;
+  obj['name'] = 'Peter';
+  console.log('追加・変更後のobj ', obj);
+  // jQuery.each
+  $.each(obj, function (key, val) {
+    console.log('each(key,val) ', key, val);
+  })
+
+  // -------------------------------------
+  // 多次元配列
+  // 配列の中に連想配列
+  const obj2 = [
+    { name: 'Tom ', age: 25 },
+    { name: 'Bob ', age: 28 },
+    { name: 'Jane ', age: 23 },
+  ];
+  console.log('obj2[0] ', obj2[0]);
+  console.log('obj2[0].name ', obj2[0].name);
+  // console.log('obj2.name はNG ', obj2.name);
+
+  $.each(obj2, function (i, val) {
+    console.log('each(i, val) ', i, val);
+    console.log('each(val.name, val.age) ', val.name, val.age);
+  })
+
+
+  // -------------------------------------
+  // jQueryオブジェクト.each
+  $('li').each(function (i, elm) {
+    console.log($(elm).text(), $(elm).data('team'));
+  })
+  // 引数を指定しない場合はthisで扱う
+  $('li').each(function () {
+    console.log($(this).text(), $(this).data('team'));
+  })
+
+  $('li').each(function (i, elm) {
+    if (i === 1) {
+      console.log('return false')
+      return false;
+      //break/continueではなくreturn false/return trueを使う
+    }
+    console.log($(elm).text(), $(elm).data('team'));
+  })
+</script>
+
+</html>
