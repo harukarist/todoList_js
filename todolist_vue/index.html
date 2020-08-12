@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0">
   <title>TodoList with Vue.js</title>
   <link rel="stylesheet" href="dist/css/app.css">
   <script src="https://kit.fontawesome.com/f2d7c28546.js" crossorigin="anonymous"></script>
@@ -21,7 +22,7 @@
 
       <section class="section__todoCreator">
         <!-- 入力フォーム -->
-        <todo-creator :propsarr="todos" @input-propsarr="todos = $event"></todo-creator>
+        <todo-creator :propsarr="todos" @input-propsarr="todos = $event" @show-all="showAll"></todo-creator>
         <!-- <div class="formArea">
           <div class="entryBox">
             <input type="text" class="entryBox__input" value="" ref="inputBox" placeholder="タスクを入力"
@@ -32,54 +33,77 @@
         </div> -->
       </section>
 
-      <!-- 検索ボックス -->
-      <section class="section__searchBox">
-
-        <task-search :propsarr="todos" @update-propsarr="todos = $event"></task-search>
-
-        <!-- <div class="searchBox">
-          <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..."
-            @keyup="searchTasks">
-          <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
-        </div> -->
+      <!-- メニュー  -->
+      <section class="section__todoMenu">
+        <ul class="todoMenu">
+          <li @click="showAll" :class="classMenuAll" class="todoMenu__item"><i class="fas fa-archive"
+              aria-hidden="true"></i>すべて</li>
+          <li @click="showMust" :class="classMenuMust" class="todoMenu__item"><i class="fas fa-star icon-star"
+              aria-hidden="true"></i>重要</li>
+          <li @click="showSmall" :class="classMenuSmall" class="todoMenu__item"><i
+              class="fas fa-stopwatch icon-stopwatch" aria-hidden="true"></i>スキマ時間</li>
+        </ul>
       </section>
 
       <!-- ToDoリスト -->
       <section class="section__todoList">
 
-        <!-- メニュー  -->
-        <ul class="todoList__menu">
-          <li @click="changeAll">すべて</li>
-          <li @click="changeMust">重要</li>
-          <li @click="changeSmall">スキマ時間</li>
-        </ul>
+        <transition name="slide-list" tag="ul">
 
-        <!-- 子コンポーネントのテンプレート -->
-        <!-- v-forとv-modelは両立できない -->
-        <!-- NG <task-item v-for="todo in todos" :key="todo.id" v-model="todo"></task-item> -->
+          <!-- 重要リスト -->
+          <ul class="todoList__list" v-if="menuFlg === 'MUST'">
+            <transition-group name="slide-item" tag="li">
+              <task-item v-for="todo in todosMust" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+              <!-- v-forとv-modelは両立できない -->
+              <!-- NG <task-item v-for="todo in todos" :key="todo.id" v-model="todo"></task-item> -->
+            </transition-group>
+          </ul>
 
-        <ul class="todoList__list" v-if="menuFlg === 'MUST'">
-          <transition-group name="slide-fade">
-            <task-item v-for="todo in todos" :key="todo.id" v-if="todo.isMust" :propsobj="todo"
-              @update-props="todo = $event">
-            </task-item>
-          </transition-group>
-        </ul>
+          <!-- スキマ時間リスト -->
+          <ul class="todoList__list" v-else-if="menuFlg === 'SMALL'">
+            <transition-group name="slide-item" tag="li">
+              <task-item v-for="todo in todosSmall" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+            </transition-group>
+          </ul>
 
-        <ul class="todoList__list" v-else-if="menuFlg === 'SMALL'">
-          <transition-group name="slide-fade">
-            <task-item v-for="todo in todos" :key="todo.id" v-if="todo.isMust" :propsobj="todo"
-              @update-props="todo = $event">
-            </task-item>
-          </transition-group>
-        </ul>
+          <!-- ゴミ箱リスト -->
+          <ul class="todoList__list" v-else-if="menuFlg === 'TRASH'">
+            <transition-group name="slide-item" tag="li">
+              <task-item v-for="todo in todosTrash" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+            </transition-group>
+          </ul>
 
-        <ul class="todoList__list" v-else>
-          <transition-group name="slide-fade">
-            <task-item v-for="todo in todos" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
-            </task-item>
-          </transition-group>
-        </ul>
+          <!-- すべて -->
+          <ul class="todoList__list" v-else>
+            <transition-group name="slide-item" tag="li">
+              <task-item v-for="todo in todosAll" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+            </transition-group>
+          </ul>
+        </transition>
+
+        <!-- <button v-if="onlyWillDo" @click="showDone">
+          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
+          完了したタスクを表示</button>
+        <button v-else @click="hideDone">
+          <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
+          未完了タスクのみ表示</button> -->
+          
+
+          
+        <button v-if="onlyWillDo" @click="showDone">
+          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
+          完了したタスクを表示</button>
+        <button v-else @click="hideDone">
+          <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
+          未完了タスクのみ表示</button>
+          
+        <!-- <button @click="hideWill">
+          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
+          完了したタスクのみ表示</button> -->
 
         <!-- 子コンポーネントなし -->
         <!-- <ul class="todoList">
@@ -92,13 +116,26 @@
                 @blur="closeEdit($event)">
             </span>
             <i :class="classMustIcon" @click="toggleMust(index)" aria-hidden="true"></i>
-            <i class="fas fa-trash-alt icon-trash" @click="deleteTask(index)" aria-hidden="true"></i>
+            <i class="fas fa-trash-alt icon-trash" @click="removeTask(index)" aria-hidden="true"></i>
           </li>
         </ul> -->
-
-
-
       </section>
+
+      <!-- 検索ボックス -->
+      <section class="section__searchBox">
+
+        <task-search :propsarr="todos" @update-propsarr="todos = $event"></task-search>
+
+        <!-- <div class="searchBox">
+                <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..."
+                  @keyup="searchTasks">
+                <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
+              </div> -->
+      </section>
+
+      <button @click="showTrash">
+        <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
+        ゴミ箱を表示</button>
     </div>
   </div>
   <script src="dist/js/bundle.js"></script>

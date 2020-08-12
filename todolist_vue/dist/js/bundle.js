@@ -293,9 +293,23 @@ var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// ------------------------------------------------
-// タスク登録コンポーネント
-_vue2.default.component('todo-creator', {
+var STORAGE_KEY = 'todos-vuejs';
+var todoStorage = {
+  fetch: function fetch() {
+    var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    todos.forEach(function (todo, index) {
+      todo.id = index;
+    });
+    todoStorage.uid = todos.length;
+    return todos;
+  },
+  save: function save(todos) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
+  }
+
+  // ------------------------------------------------
+  // タスク登録コンポーネント
+};_vue2.default.component('todo-creator', {
   props: {
     propsarr: Array
   },
@@ -354,11 +368,15 @@ _vue2.default.component('todo-creator', {
           taskName: text,
           isDone: false,
           isMust: false,
+          isSmall: false,
+          isRemoved: false,
           isShow: true
         });
         this.value = '';
         this.errMsg = '';
         console.log('pushedArr', this.pushedArr);
+        // 親コンポーネントに通知
+        this.$emit('show-all');
       }
       // 入力フォームにフォーカスを戻す(ref="inputBox"のDOMにfocus)
       this.$refs.inputBox.focus();
@@ -374,12 +392,13 @@ _vue2.default.component('task-search', {
   },
   data: function data() {
     return {
+      isShow: false,
       searchVal: '',
       // data内で最初の配列を保存
       originalArr: this.propsarr
     };
   },
-  template: '\n    <div class="searchBox">\n      <input type="text" class="searchBox__input" value="" placeholder="Search..." @keyup="searchTasks($event)">\n      <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>\n    </div>\n  ',
+  template: '\n    <div class="searchBox__wrapper">\n      <div class="searchBox" v-if="isShow">\n        <input type="text" class="searchBox__input" value="" placeholder="Search..." @keyup="searchTasks($event)">\n      </div>\n\n      <i class="fas fa-search searchBox__icon" aria-hidden="true" @mouseover="ShowElement"></i>\n    </div>\n  ',
   computed: {
     resultArr: {
       // 子のcomputedの中で親のpropsを受け取り、変更を$emitで親に通知する
@@ -393,6 +412,16 @@ _vue2.default.component('task-search', {
     }
   },
   methods: {
+    ShowElement: function ShowElement() {
+      this.isShow = true;
+    },
+    HideElement: function HideElement() {
+      this.isShow = false;
+    },
+    toggleShow: function toggleShow() {
+      this.isShow = !this.isShow;
+    },
+
     filterTasks: function filterTasks(elm) {
       // 第二引数の'i'は「大文字・小文字を区別しない」オプション
       var regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i');
@@ -421,8 +450,6 @@ _vue2.default.component('task-search', {
 
 // ------------------------------------------------
 // タスク表示コンポーネント
-// html側のタグ
-// <task-item v-for="todo in todos" :key="todo.id" :value="todo" @toggle-done="todo = $event" @toggle-must="todo = $event" @change-task-name="todo = $event" @delete-task="todo = $event"></task-item>
 
 _vue2.default.component('task-item', {
   // props名は小文字のみOK
@@ -434,18 +461,22 @@ _vue2.default.component('task-item', {
   data: function data() {
     return {
       isEdit: false,
+      isShowIcon: false,
       keyDownCode: ''
     };
   },
-  template: '\n  <transition name="slide-fade">\n  <li v-show="propsobj.isShow" :class="classTaskItem" class="todoList__item">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ propsobj.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit">\n      <input type="text" class="todoList__editBox" :value="propsobj.taskName" ref="editBox" @change="changeTaskName($event)" @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)" @blur="changeTaskName($event)"></span>\n    <i :class="classMustIcon" @click="toggleMust" aria-hidden="true" ></i>\n    <i class="fas fa-trash-alt icon-trash" @click="deleteTask" aria-hidden="true"></i>\n    </li>\n    </transition>\n  ',
+  template:
+  // <i v-show="propsobj.isMust" :class="classMustIcon" class="icon-mark" aria-hidden="true"></i>
+  // <i v-show="propsobj.isSmall" :class="classSmallIcon" class="icon-mark" aria-hidden="true"></i>
+  '\n    <li :class="classTaskItem" @mouseover="isShowIcon=true" @mouseleave="isShowIcon=false">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ propsobj.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea">\n      <input type="text" class="todoList__editBox" :value="propsobj.taskName" ref="editBox" @change="changeTaskName($event)" @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)" @blur="changeTaskName($event)"></span>\n    <span>\n      <i v-show="isShowIcon || propsobj.isMust" :class="classMustIcon" class="todoList__icon" @click="toggleMust" aria-hidden="true" ></i>\n      <i v-show="isShowIcon || propsobj.isSmall" :class="classSmallIcon" class="todoList__icon"  @click="toggleSmall" aria-hidden="true" ></i>\n      <i v-show="isShowIcon" :class="classTrashIcon" class="todoList__icon"  @click="toggleRemove" aria-hidden="true"></i>\n      </li>\n    </span>\n  ',
 
   computed: {
     classTaskItem: function classTaskItem() {
       return {
         'todoList__item': true,
         'todoList__item--done': this.propsobj.isDone,
-        'todoList__item--must': this.propsobj.isMust
-        // 'todoList__item--deleted': !this.propsobj.isShow,
+        'todoList__item--must': this.propsobj.isMust,
+        'todoList__item--small': this.propsobj.isSmall
       };
     },
     classCheckBox: function classCheckBox() {
@@ -454,14 +485,34 @@ _vue2.default.component('task-item', {
         'fa-check-square': this.propsobj.isDone,
         'fa-square': !this.propsobj.isDone,
         'icon-checkbox': true
+        // 'todoList__icon': true
       };
     },
     classMustIcon: function classMustIcon() {
       return {
-        'fas': this.propsobj.isMust,
-        'far': !this.propsobj.isMust,
+        'fas true': this.propsobj.isMust,
+        'far false': !this.propsobj.isMust,
         'fa-star': true,
         'icon-star': true
+        // 'todoList__icon': true
+      };
+    },
+    classSmallIcon: function classSmallIcon() {
+      return {
+        'fas': true,
+        'fa-stopwatch': true,
+        'icon-stopwatch': true,
+        // 'todoList__icon': true,
+        'true': this.propsobj.isSmall,
+        'false': !this.propsobj.isSmall
+      };
+    },
+    classTrashIcon: function classTrashIcon() {
+      return {
+        'fas fa-trash-alt icon-trash': true,
+        // 'todoList__icon': true,
+        'true': this.propsobj.isRemoved,
+        'false': !this.propsobj.isRemoved
       };
     },
     localObj: {
@@ -482,6 +533,9 @@ _vue2.default.component('task-item', {
     },
     toggleMust: function toggleMust() {
       this.localObj.isMust = !this.propsobj.isMust;
+    },
+    toggleSmall: function toggleSmall() {
+      this.localObj.isSmall = !this.propsobj.isSmall;
     },
     focusEdit: function focusEdit() {
       this.isEdit = true;
@@ -508,9 +562,8 @@ _vue2.default.component('task-item', {
       }
       this.isEdit = false;
     },
-    deleteTask: function deleteTask() {
-      this.localObj.isShow = false;
-      console.log('削除する', this.localObj);
+    toggleRemove: function toggleRemove() {
+      this.localObj.isRemoved = !this.propsobj.isRemoved;
     }
   }
 });
@@ -520,60 +573,135 @@ new _vue2.default({
   el: '#app',
   data: {
     menuFlg: '',
+    onlyWillDo: true,
     todos: [{
       id: '0001',
       taskName: '未完了のタスク',
       isDone: false,
       isMust: false,
+      isSmall: false,
+      isRemoved: false,
       isShow: true
     }, {
       id: '0002',
       taskName: '終わったタスク',
       isDone: true,
       isMust: false,
+      isSmall: false,
+      isRemoved: false,
       isShow: true
     }, {
       id: '0003',
       taskName: '未完了の大事なタスク',
       isDone: false,
       isMust: true,
+      isSmall: false,
+      isRemoved: false,
       isShow: true
     }, {
       id: '0004',
       taskName: '終わった大事なタスク',
       isDone: true,
       isMust: true,
+      isSmall: false,
+      isRemoved: false,
       isShow: true
     }]
   },
-  // computed: {
-  //   menuType: function () {
-  //     return this.menuFlg
-  //   },
-  // },
+  computed: {
+    classMenuAll: function classMenuAll() {
+      if (this.menuFlg === '') {
+        return 'active';
+      }
+    },
+    classMenuMust: function classMenuMust() {
+      if (this.menuFlg === 'MUST') {
+        return 'active';
+      }
+    },
+    classMenuSmall: function classMenuSmall() {
+      if (this.menuFlg === 'SMALL') {
+        return 'active';
+      }
+    },
+    todosMust: function todosMust() {
+      if (this.onlyWillDo) {
+        return this.todos.filter(function (todo) {
+          return todo.isMust && !todo.isDone && !todo.isRemoved;
+        });
+      } else {
+        return this.todos.filter(function (todo) {
+          return todo.isMust && !todo.isRemoved;
+        });
+      }
+    },
+    todosSmall: function todosSmall() {
+      if (this.onlyWillDo) {
+        return this.todos.filter(function (todo) {
+          return todo.isSmall && !todo.isDone && !todo.isRemoved;
+        });
+      } else {
+        return this.todos.filter(function (todo) {
+          return todo.isSmall && !todo.isRemoved;
+        });
+      }
+    },
+    todosAll: function todosAll() {
+      if (this.onlyWillDo) {
+        return this.todos.filter(function (todo) {
+          return !todo.isDone && !todo.isRemoved;
+        });
+      } else {
+        return this.todos.filter(function (todo) {
+          return !todo.isRemoved;
+        });
+      }
+    },
+    todosTrash: function todosTrash() {
+      if (this.onlyWillDo) {
+        return this.todos.filter(function (todo) {
+          return !todo.isDone && todo.isRemoved;
+        });
+      } else {
+        return this.todos.filter(function (todo) {
+          return todo.isRemoved;
+        });
+      }
+    }
+  },
 
   methods: {
     toggleShow: function toggleShow() {
       this.isShow = !this.isShow;
     },
-    // remove: function(index) {
-    //   this.todos.splice(index, 1)
-    // },
-
-    changeAll: function changeAll() {
+    showAll: function showAll() {
       this.menuFlg = '';
-      console.log(this.menuFlg);
     },
-    changeMust: function changeMust() {
+    showMust: function showMust() {
       this.menuFlg = 'MUST';
-      console.log(this.menuFlg);
     },
-    changeSmall: function changeSmall() {
+    showSmall: function showSmall() {
       this.menuFlg = 'SMALL';
-      console.log(this.menuFlg);
+    },
+    showDone: function showDone() {
+      this.onlyWillDo = false;
+    },
+    hideDone: function hideDone() {
+      this.onlyWillDo = true;
+    },
+    showTrash: function showTrash() {
+      this.menuFlg = 'TRASH';
+    }
+  },
+
+  watch: {
+    todos: {
+      handler: function handler(todos) {
+        todoStorage.save(todos);
+      },
+      deep: true
     }
   }
-
 });
 
 /***/ }),

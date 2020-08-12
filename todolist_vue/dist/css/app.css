@@ -1,45 +1,33 @@
 
 /* 表示・非表示アニメーション中 */
-.slide-fade-enter-active, .slide-fade-leave-active {
+.slide-list-enter-active, .slide-list-leave-active {
   transition: all .5s ease-in-out;
 }
 /* 表示アニメーション開始時 */
-.slide-fade-enter {
+.slide-list-enter {
   opacity: 0;
-  transform: translateX(10px);
+  transform: translateX(20px);
 }
 /* 非表示アニメーション後 */
-.slide-fade-leave-to {
+.slide-list-leave-to {
   opacity: 0;
-  transform: translateX(10px);
+  transform: translateX(-20px);
 }
-
 
 
 /* 表示・非表示アニメーション中 */
-.test-enter-active, .test-leave-active {
+.slide-item-enter-active, .slide-item-leave-active {
   transition: all .5s ease-in-out;
-  /* transform: translateX(10px); */
 }
-
 /* 表示アニメーション開始時 */
-.test-enter {
+.slide-item-enter {
   opacity: 0;
-  transform: translateX(10px);
+  transform: translateX(20px);
 }
 /* 非表示アニメーション後 */
-.test-leave-to {
+.slide-item-leave-to {
   opacity: 0;
-  transform: translateX(10px);
-}
-/* 要素が移動する時に700msで移動するように指定 */
-/* .test-move {
-  transition: all 700ms;
-} */
-.test-leave-active {
-  transition: all 1s;
-  /* transform: translateX(10px); */
-  /* transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0); */
+  transform: translateX(20px);
 }
 
 
@@ -49,6 +37,7 @@ body {
   width: 100vw;
   /* height: 100vh; */
   min-height: 100vh;
+  height: 100%;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -69,14 +58,14 @@ body {
   text-align: center;
 }
 .heading__mainTitle {
-  font-size: 40px;
+  font-size: 30px;
   margin: 0 auto;
 }
 .heading__subTitle {
-  font-size: 24px;
+  font-size: 20px;
   opacity: .6;
   color: #3FB983;
-  margin: 5px auto;
+  margin: 2px auto;
 }
 
 .formArea {
@@ -140,16 +129,18 @@ body {
   color: #729e8a;
 }
 
+.searchBox__wrapper {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
 .searchBox {
-  width: 60%;
+  width: 90%;
   /* height: 55px; */
   /* border-radius: 10px; */
   margin: 0 0 20px auto;
-  display: flex;
-  align-items: center;
   padding: 5px 0;
   box-sizing: border-box;
-  position: relative;
   border-bottom: 1px solid #505050;
   transition: .2s ease-in-out;
   transform-origin: right;
@@ -181,51 +172,57 @@ body {
   outline: none;
   color: #729e8a;
 }
+
 .searchBox__icon {
   font-size: 18px;
   width: 20px;
   color: #54615b;
   position: absolute;
-  right: 10px;
+  right: 0;
+  top: 10px;
 }
 
-.section__todoList {
-  margin-bottom: 50px;
-}
-
-.todoList__menu {
+/* メニュー */
+.todoMenu {
   list-style: none;
   padding: 0;
   margin: 0;
-  background: #242425;
   display: flex;
   /* align-items: center; */
 }
-
-.todoList__menu li {
+.todoMenu__item {
  width: calc(100% / 3);
- text-align: center; 
  color: #A5A5A5;
- padding: 10px 0;
+ text-align: center; 
  cursor: pointer;
- 
+ transition: .2s ease-in-out;
+ font-size: 14px;
+ padding-bottom: 5px;
 }
-.todoList__menu a {
-  width: auto;
-  text-decoration: none;
-  display: block;
-  transition: .2s ease-in-out;
-}
-.todoList__menu li:hover {
-  background: #4D4D4D;
+.todoMenu__item:hover {
+  background: #242425;
   transform: scale(1.02);
 }
+.todoMenu__item.active {
+  background: #201b1b;
+}
+.todoMenu__item i {
+  display: block;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-size: 24px;
+  /* padding-right: 5px; */
+}
 
-
+/* Todoリスト */
+.section__todoList {
+  margin-bottom: 20px;
+}
 .todoList__list {
   list-style: none;
-  padding: 0;
-  margin: 10px 0 50px 0;
+  padding: 10px 0;
+  margin: 0 0 10px 0;
+  background: #201b1b;
 }
 .todoList__list:empty {
   margin: 0;
@@ -247,10 +244,10 @@ body {
 .todoList__item--done {
   background: inherit;
   border: none;
-  opacity: .4;
 }
 .todoList__taskName {
-  width: 260px;
+  width: 200px;
+  margin-left: 5px;
   overflow: hidden;
 }
 .todoList__taskName:before {
@@ -264,16 +261,17 @@ body {
 }
 .todoList__item--done > .todoList__taskName {
   text-decoration: line-through;
+  opacity: .4;
 }
 .todoList__item--must {
   background: #4D4D4D;
 }
-/* .todoList__item--deleted {
-  display: none;
-} */
+.todoList__item--small {
+  background: #303030;
+}
 
 .todoList__editArea {
-  width: 250px;
+  width: 240px;
   overflow: hidden;
 }
 .todoList__editArea:before {
@@ -301,33 +299,63 @@ body {
   background: #5c5c5c;
   color: #d1d1d1;
 } */
-.icon-checkbox, .icon-star, .icon-trash {
+
+.todoList__icon {
   cursor: pointer;
   transition: .2s ease-in-out transform;
   z-index: 2;
 }
-/* .todoList__item:hover.icon-checkbox, .todoList__item:hover.icon-star, .todoList__item:hover.icon-trash {
+/* .todoList__item:hover.todoList__icon {
   transform: scale(1.5);
   transition: .2s ease-in-out transform;
 } */
-.icon-checkbox:hover, .icon-star:hover, .icon-trash:hover {
-  transform: scale(1.2);
-  transition: .2s ease-in-out transform;
-  color: #729e8a;
+
+.icon-mark {
+  margin-left: 5px;
 }
 .icon-checkbox {
-  margin-right: 10px;
   font-size: 24px;
 }
 .icon-star {
-  position: absolute;
-  right: 50px;
   font-size: 18px;
 }
-.todoList__item--must > .icon-star {
-  color: #729e8a;
+.icon-stopwatch {
+  font-size: 18px;
 }
-.icon-trash {
+.todoList__icon.icon-checkbox {
+  margin-right: 10px;
+}
+.todoList__item--done > .icon-checkbox {
+  opacity: .4;
+}
+.todoList__icon.icon-star {
   position: absolute;
-  right: 20px;
+  right: 60px;
+}
+.todoList__icon.icon-stopwatch {
+  position: absolute;
+  right: 35px;
+}
+.todoList__icon.icon-trash {
+  position: absolute;
+  right: 10px;
+}
+
+.todoList__icon:hover {
+  transform: scale(1.2);
+  transition: .2s ease-in-out transform;
+  /* color: #729e8a; */
+  opacity: 1;
+}
+
+.todoList__icon.true {
+  color: #b8a70e;
+  transform: scale(1.1);
+}
+.todoList__icon.false {
+  opacity: .4;
+}
+
+button{
+  background: #666;
 }
