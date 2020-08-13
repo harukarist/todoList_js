@@ -23,14 +23,6 @@
       <section class="section__todoCreator">
         <!-- 入力フォーム -->
         <todo-creator :propsarr="todos" @input-propsarr="todos = $event" @show-all="showAll"></todo-creator>
-        <!-- <div class="formArea">
-          <div class="entryBox">
-            <input type="text" class="entryBox__input" value="" ref="inputBox" placeholder="タスクを入力"
-              @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)">
-            <button class="far fa-paper-plane entryBox__btn" @click="addTask($event)" aria-hidden="true"></button>
-          </div>
-          <span class="formArea__is-error">{{errMsg}}</span>
-        </div> -->
       </section>
 
       <!-- メニュー  -->
@@ -48,94 +40,105 @@
       <!-- ToDoリスト -->
       <section class="section__todoList">
 
-        <transition name="slide-list" tag="ul">
-
+        <transition name="slide-list">
           <!-- 重要リスト -->
           <ul class="todoList__list" v-if="menuFlg === 'MUST'">
-            <transition-group name="slide-item" tag="li">
+            <transition-group name="slide-item">
               <task-item v-for="todo in todosMust" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
               </task-item>
-              <!-- v-forとv-modelは両立できない -->
-              <!-- NG <task-item v-for="todo in todos" :key="todo.id" v-model="todo"></task-item> -->
             </transition-group>
+            <li class="todoList__noneTask" v-if="menuFlg === 'MUST' && !todosMust.length && !this.isSearch">
+              重要タスクはまだありません。<br>登録しよう！</li>
+            <li class="todoList__noneTask" v-if="menuFlg === 'MUST' && !todosMust.length && this.isSearch">
+              検索条件に一致するタスクはありません</li>
           </ul>
 
           <!-- スキマ時間リスト -->
           <ul class="todoList__list" v-else-if="menuFlg === 'SMALL'">
-            <transition-group name="slide-item" tag="li">
+            <transition-group name="slide-item">
               <task-item v-for="todo in todosSmall" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
               </task-item>
             </transition-group>
+            <li class="todoList__noneTask" v-if="menuFlg === 'SMALL' && !todosSmall.length && !this.isSearch">
+              スキマ時間のタスクはまだありません。<br>登録しよう！</li>
+            <li class="todoList__noneTask" v-if="menuFlg === 'SMALL' && !todosSmall.length && this.isSearch">
+              検索条件に一致するタスクはありません</li>
           </ul>
 
-          <!-- ゴミ箱リスト -->
-          <ul class="todoList__list" v-else-if="menuFlg === 'TRASH'">
+          <!-- すべて -->
+          <ul class="todoList__list" v-else-if="menuFlg === 'ALL'">
+            <transition-group name="slide-item">
+              <task-item v-for="todo in todosAll" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+            </transition-group>
+            <li class="todoList__noneTask" v-if="menuFlg === 'ALL' && !todosAll.length && !this.isSearch">
+              タスクはまだありません。<br>登録しよう！</li>
+            <li class="todoList__noneTask" v-if="menuFlg === 'ALL' && !todosAll.length && this.isSearch">
+              検索条件に一致するタスクはありません</li>
+          </ul>
+
+        </transition>
+
+
+      </section>
+
+      <!-- Doneリスト -->
+      <section class="section__todoList">
+
+        <p class="todoList__message" v-if="todosDone.length && !this.isSearch">
+          {{todosDone.length}} 件のタスクが完了しました！<br>
+          {{showDoneMessage()}}
+        </p>
+
+        <transition name="slide-list" tag="ul">
+          <ul class="todoList__list" v-if="showDone">
+            <transition-group name="slide-item" tag="li">
+              <task-item v-for="todo in todosDone" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
+              </task-item>
+            </transition-group>
+            <li class="todoList__noneTask" v-if="showDone && !todosDone.length && !this.isSearch">
+              完了タスクはまだありません。<br>やってみよう！</li>
+            <li class="todoList__noneTask" v-if="showDone && !todosDone.length && this.isSearch">検索条件に一致するタスクはありません
+            </li>
+          </ul>
+        </transition>
+
+        <button class="btn" v-if="!showDone" @click="toggleDone">
+          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
+          完了タスクを表示</button>
+        <button class="btn" v-else @click="toggleDone">
+          <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
+          未完了タスクのみ表示</button>
+      </section>
+
+
+      <!-- ゴミ箱リスト -->
+      <!-- <section class="section__todoList">
+
+        <transition name="slide-list">
+          <ul class="todoList__list" v-if="showTrash">
             <transition-group name="slide-item" tag="li">
               <task-item v-for="todo in todosTrash" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
               </task-item>
             </transition-group>
-          </ul>
-
-          <!-- すべて -->
-          <ul class="todoList__list" v-else>
-            <transition-group name="slide-item" tag="li">
-              <task-item v-for="todo in todosAll" :key="todo.id" :propsobj="todo" @update-props="todo = $event">
-              </task-item>
-            </transition-group>
+            <li class="todoList__noneTask" v-if="showTrash && !todosTrash.length">ゴミ箱の中身はありません</li>
           </ul>
         </transition>
 
-        <!-- <button v-if="onlyWillDo" @click="showDone">
-          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
-          完了したタスクを表示</button>
-        <button v-else @click="hideDone">
-          <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
-          未完了タスクのみ表示</button> -->
-          
-
-          
-        <button v-if="onlyWillDo" @click="showDone">
-          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
-          完了したタスクを表示</button>
-        <button v-else @click="hideDone">
-          <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
-          未完了タスクのみ表示</button>
-          
-        <!-- <button @click="hideWill">
-          <i class="far fa-check-square icon-checkbox" aria-hidden="true"></i>
-          完了したタスクのみ表示</button> -->
-
-        <!-- 子コンポーネントなし -->
-        <!-- <ul class="todoList">
-          <li v-for="(todo,index) in todos" :key="todo.id" :todo="todo" :class="classTaskItem">
-            <i :class="classCheckBox" @click="toggleDone(index)" aria-hidden="true"></i>
-            <span v-show="!isEdit" class="todoList__taskName" 　@click="isEdit=true">{{ todo.taskName }}</span>
-            <span v-show="isEdit" class="todoList__editArea" @mouseover="focusEdit">
-              <input type="text" class="todoList__editBox"  v-model="editVal=todo.taskName"
-                ref="editBox" @change="changeTaskName($event)" @keydown.13="closeEdit($event)"
-                @blur="closeEdit($event)">
-            </span>
-            <i :class="classMustIcon" @click="toggleMust(index)" aria-hidden="true"></i>
-            <i class="fas fa-trash-alt icon-trash" @click="removeTask(index)" aria-hidden="true"></i>
-          </li>
-        </ul> -->
-      </section>
+        <button class="btn" v-if="!showTrash" @click="toggleTrash">
+          <i class="fas fa-trash-alt icon-trash" aria-hidden="true"></i>
+          ゴミ箱を表示</button>
+        <button class="btn" v-else @click="toggleTrash">
+          <i class="fas fa-trash-alt icon-trash" aria-hidden="true"></i>
+          ゴミ箱を非表示</button>
+      </section> -->
 
       <!-- 検索ボックス -->
       <section class="section__searchBox">
-
-        <task-search :propsarr="todos" @update-propsarr="todos = $event"></task-search>
-
-        <!-- <div class="searchBox">
-                <input type="text" class="searchBox__input" value="" v-model="searchVal" placeholder="Search..."
-                  @keyup="searchTasks">
-                <i class="fas fa-search searchBox__icon" aria-hidden="true"></i>
-              </div> -->
+        <task-search :propsarr="todos" @update-propsarr="todos = $event" @on-search-flg="onSearch"
+          @off-search-flg="offSearch"></task-search>
       </section>
 
-      <button @click="showTrash">
-        <i class="far fa-square icon-checkbox" aria-hidden="true"></i>
-        ゴミ箱を表示</button>
     </div>
   </div>
   <script src="dist/js/bundle.js"></script>

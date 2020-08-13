@@ -1,4 +1,5 @@
 
+/* リスト全体のアニメーション */
 /* 表示・非表示アニメーション中 */
 .slide-list-enter-active, .slide-list-leave-active {
   transition: all .5s ease-in-out;
@@ -15,6 +16,7 @@
 }
 
 
+/* 個別タスクのアニメーション */
 /* 表示・非表示アニメーション中 */
 .slide-item-enter-active, .slide-item-leave-active {
   transition: all .5s ease-in-out;
@@ -36,8 +38,7 @@ body {
   color: #BCBCBC;
   width: 100vw;
   /* height: 100vh; */
-  min-height: 100vh;
-  height: 100%;
+  /* min-height: 100vh; */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -49,7 +50,8 @@ body {
 
 .main {
   width: 100%;
-  margin: 0 auto;
+  height: 100%;
+  margin: 20px auto;
   padding: 10px;
   max-width: 400px;
   box-sizing: border-box;
@@ -135,26 +137,34 @@ body {
   position: relative;
 }
 .searchBox {
-  width: 90%;
-  /* height: 55px; */
-  /* border-radius: 10px; */
-  margin: 0 0 20px auto;
+  width: 80%;
   padding: 5px 0;
   box-sizing: border-box;
   border-bottom: 1px solid #505050;
   transition: .2s ease-in-out;
-  transform-origin: right;
+  transform-origin: left;
 }
 .searchBox:hover {
   border-bottom: 1px solid #486b5b;
-  transform: scale(1.1);
   color: #729e8a;
 }
-.searchBox:hover .searchBox__icon {
+
+.searchBox__icon {
+  font-size: 18px;
+  width: 20px;
+  margin: 20px 5px 20px 15px;
+  color: #54615b;
+}
+.searchBox__icon:hover {
   transform: scale(1.2,1.2);
   color: #729e8a;
 }
-.searchBox:hover .searchBox__input {
+.searchBox__icon.active {
+  transform: scale(1.2,1.2);
+  color: #729e8a;
+}
+
+.searchBox__wrapper:hover .searchBox__input {
   color: #729e8a;
 }
 .searchBox__input {
@@ -173,14 +183,7 @@ body {
   color: #729e8a;
 }
 
-.searchBox__icon {
-  font-size: 18px;
-  width: 20px;
-  color: #54615b;
-  position: absolute;
-  right: 0;
-  top: 10px;
-}
+
 
 /* メニュー */
 .todoMenu {
@@ -205,6 +208,9 @@ body {
 }
 .todoMenu__item.active {
   background: #201b1b;
+  color: #3FB983;
+  opacity: .6;
+  border-bottom: 3px solid #3FB983;
 }
 .todoMenu__item i {
   display: block;
@@ -215,13 +221,10 @@ body {
 }
 
 /* Todoリスト */
-.section__todoList {
-  margin-bottom: 20px;
-}
 .todoList__list {
   list-style: none;
-  padding: 10px 0;
-  margin: 0 0 10px 0;
+  padding: 0;
+  margin: 0 0 30px 0;
   background: #201b1b;
 }
 .todoList__list:empty {
@@ -310,6 +313,15 @@ body {
   transition: .2s ease-in-out transform;
 } */
 
+.todoList__noneTask {
+  padding: 15px;
+  /* text-align: center; */
+}
+
+.todoList__message {
+  padding: 5px 15px;
+}
+
 .icon-mark {
   margin-left: 5px;
 }
@@ -356,6 +368,22 @@ body {
   opacity: .4;
 }
 
-button{
-  background: #666;
+.btn {
+  background: #777;
+  border: none;
+  padding: 5px 10px;
+  margin: 0 auto 10px;
+  display: block;
 }
+.btn i {
+  font-size: 18px;
+  margin-right: 5px;
+  vertical-align: baseline;
+}
+.btn:hover, .btn:active, .btn:focus {
+  outline: none;
+}
+.btn:hover {
+  background: #888;
+}
+

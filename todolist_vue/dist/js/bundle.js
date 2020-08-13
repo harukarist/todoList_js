@@ -293,10 +293,15 @@ var _vue2 = _interopRequireDefault(_vue);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+// ------------------------------------------------
+// localStorage
 var STORAGE_KEY = 'todos-vuejs';
 var todoStorage = {
   fetch: function fetch() {
-    var todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+    // JSON.parse()でJSON形式から配列に変換
+    var todos = JSON.parse(
+    // ローカルストレージからデータを取得
+    localStorage.getItem(STORAGE_KEY) || '[]');
     todos.forEach(function (todo, index) {
       todo.id = index;
     });
@@ -304,6 +309,8 @@ var todoStorage = {
     return todos;
   },
   save: function save(todos) {
+    // ローカルストレージにデータ保存
+    // JSON.stringify()でJSON形式に変換
     localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));
   }
 
@@ -316,11 +323,11 @@ var todoStorage = {
   // props: ['propsarr'],
   data: function data() {
     return {
-      value: '',
+      newTask: '',
       errMsg: ''
     };
   },
-  template: '\n    <div class="formArea">\n      <div class="entryBox">\n        <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="value" placeholder="\u30BF\u30B9\u30AF\u3092\u5165\u529B" @keydown.13="addTask">\n        <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>\n      </div>\n      <span class="formArea__is-error">{{ errMsg }}</span>\n    </div>\n  ',
+  template: '\n    <div class="formArea">\n      <div class="entryBox">\n        <input type="text" class="entryBox__input" value="" ref="inputBox" v-model="newTask" placeholder="\u30BF\u30B9\u30AF\u3092\u5165\u529B" @keydown.13="addTask">\n        <i class="far fa-paper-plane entryBox__btn" @click="addTask" aria-hidden="true"></i>\n      </div>\n      <span class="formArea__is-error">{{ errMsg }}</span>\n    </div>\n  ',
   computed: {
     pushedArr: {
       // 子のcomputedの中で親のpropsを受け取り、変更を$emitで親に通知する
@@ -328,16 +335,15 @@ var todoStorage = {
       get: function get() {
         return this.propsarr;
       },
-      set: function set(value) {
-        this.$emit('input-propsarr', value);
+      set: function set(newTask) {
+        this.$emit('input-propsarr', newTask);
       }
     }
   },
   methods: {
-    createHashId: function createHashId() {
-      return Math.random().toString(36).slice(-16);
-      // 【TODO】完全に一意にする
-    },
+    // createHashId: function () {
+    //   return Math.random().toString(36).slice(-16);
+    // },
     saveKeyDown: function saveKeyDown(e) {
       // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
       this.keyDownCode = e.keyCode;
@@ -351,11 +357,9 @@ var todoStorage = {
       }
       this.isEdit = false;
     },
-    addTask: function addTask(e) {
-      // let text = e.currentTarget.value
-      // let text = e.target.value
+    addTask: function addTask() {
       // v-modelの値を取得
-      var text = this.value;
+      var text = this.newTask;
       console.log('addTask', text);
       if (!text) {
         console.log('err');
@@ -364,7 +368,7 @@ var todoStorage = {
       } else {
         // computedの配列にオブジェクトを追加
         this.pushedArr.push({
-          id: this.createHashId(),
+          id: todoStorage.uid++,
           taskName: text,
           isDone: false,
           isMust: false,
@@ -372,7 +376,7 @@ var todoStorage = {
           isRemoved: false,
           isShow: true
         });
-        this.value = '';
+        this.newTask = '';
         this.errMsg = '';
         console.log('pushedArr', this.pushedArr);
         // 親コンポーネントに通知
@@ -398,7 +402,7 @@ _vue2.default.component('task-search', {
       originalArr: this.propsarr
     };
   },
-  template: '\n    <div class="searchBox__wrapper">\n      <div class="searchBox" v-if="isShow">\n        <input type="text" class="searchBox__input" value="" placeholder="Search..." @keyup="searchTasks($event)">\n      </div>\n\n      <i class="fas fa-search searchBox__icon" aria-hidden="true" @mouseover="ShowElement"></i>\n    </div>\n  ',
+  template: '\n    <transition name="slide-list">\n    <div class="searchBox__wrapper">\n      <i :class="classSearchIcon" aria-hidden="true" @click="toggleShow"></i>\n      <div class="searchBox" v-show="isShow">\n        <input type="text" v-model="searchVal" class="searchBox__input" placeholder="Search..." @keyup="searchTasks($event)">\n        <i v-show="this.searchVal" class="fas fa-times" @click="clearVal"></i>\n      </div>\n    </div>\n    </transition>\n  ',
   computed: {
     resultArr: {
       // 子のcomputedの中で親のpropsを受け取り、変更を$emitで親に通知する
@@ -409,16 +413,21 @@ _vue2.default.component('task-search', {
       set: function set(value) {
         this.$emit('update-propsarr', value);
       }
+    },
+    classSearchIcon: function classSearchIcon() {
+      return {
+        'fas fa-search searchBox__icon': true,
+        'active': this.isShow
+      };
     }
   },
   methods: {
-    ShowElement: function ShowElement() {
-      this.isShow = true;
-    },
-    HideElement: function HideElement() {
-      this.isShow = false;
-    },
     toggleShow: function toggleShow() {
+      if (this.isShow) {
+        this.searchVal = '';
+        this.searchTasks();
+        console.log('this.searchVal', this.searchVal);
+      }
       this.isShow = !this.isShow;
     },
 
@@ -429,21 +438,23 @@ _vue2.default.component('task-search', {
       // 引数の各要素について、regexpとマッチするものだけ返す
       return elm.taskName.match(regexp);
     },
-    searchTasks: function searchTasks(e) {
-      this.searchVal = e.target.value;
+    searchTasks: function searchTasks() {
       console.log('this.searchVal', this.searchVal);
       if (this.searchVal) {
-        // data内で最初の配列を保存
-        console.log('this.originalArr', this.originalArr);
-        console.log('this.propsArr', this.propsArr);
-        // 配列の各要素について、filter()で絞り込んで新しい配列を生成
+        // data内で保存した最初の配列originalArrの各要素について、filter()で絞り込んで新しい配列を生成
         this.resultArr = this.originalArr.filter(this.filterTasks);
         console.log('this.resultArr', this.resultArr);
+        this.$emit('on-search-flg');
       } else {
         // 検索ボックスの値が削除されたら元の配列を表示
         console.log('originalArr', this.originalArr);
         this.resultArr = this.originalArr;
+        this.$emit('off-search-flg');
       }
+    },
+    clearVal: function clearVal() {
+      this.searchVal = '';
+      this.searchTasks();
     }
   }
 });
@@ -465,10 +476,7 @@ _vue2.default.component('task-item', {
       keyDownCode: ''
     };
   },
-  template:
-  // <i v-show="propsobj.isMust" :class="classMustIcon" class="icon-mark" aria-hidden="true"></i>
-  // <i v-show="propsobj.isSmall" :class="classSmallIcon" class="icon-mark" aria-hidden="true"></i>
-  '\n    <li :class="classTaskItem" @mouseover="isShowIcon=true" @mouseleave="isShowIcon=false">\n    <i :class="classCheckBox" @click="toggleDone" aria-hidden="true"></i>\n\n    <span v-show="!isEdit" class="todoList__taskName"\u3000@click="isEdit=true">{{ propsobj.taskName }}</span>\n    <span v-show="isEdit" class="todoList__editArea">\n      <input type="text" class="todoList__editBox" :value="propsobj.taskName" ref="editBox" @change="changeTaskName($event)" @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)" @blur="changeTaskName($event)"></span>\n    <span>\n      <i v-show="isShowIcon || propsobj.isMust" :class="classMustIcon" class="todoList__icon" @click="toggleMust" aria-hidden="true" ></i>\n      <i v-show="isShowIcon || propsobj.isSmall" :class="classSmallIcon" class="todoList__icon"  @click="toggleSmall" aria-hidden="true" ></i>\n      <i v-show="isShowIcon" :class="classTrashIcon" class="todoList__icon"  @click="toggleRemove" aria-hidden="true"></i>\n      </li>\n    </span>\n  ',
+  template: '\n    <li :class="classTaskItem" @mouseover="isShowIcon=true" @mouseleave="isShowIcon=false">\n\n    <i :class="classCheckBox" class="todoList__icon" @click="toggleDone" aria-hidden="true"></i>\n\n    <span v-show="!isEdit" class="todoList__taskNa"\u3000@click="isEdit=true">\n    {{ propsobj.taskName }}\n    </span>\n\n    <span v-show="isEdit" class="todoList__editArea">\n      <input type="text" class="todoList__editBox" :value="propsobj.taskName" ref="editBox" @change="changeTaskName($event)" @keydown="saveKeyDown($event)" @keyup.enter="checkKeyUp($event)" @blur="changeTaskName($event)">\n    </span>\n\n    <span>\n      <i v-show="isShowIcon || propsobj.isMust" :class="classMustIcon" class="todoList__icon" @click="toggleMust" aria-hidden="true" ></i>\n      <i v-show="isShowIcon || propsobj.isSmall" :class="classSmallIcon" class="todoList__icon"  @click="toggleSmall" aria-hidden="true" ></i>\n      <i v-show="isShowIcon || propsobj.isRemoved" :class="classTrashIcon" class="todoList__icon" @click="toggleRemove" aria-hidden="true"></i>\n      </li>\n    </span>\n  ',
 
   computed: {
     classTaskItem: function classTaskItem() {
@@ -485,7 +493,6 @@ _vue2.default.component('task-item', {
         'fa-check-square': this.propsobj.isDone,
         'fa-square': !this.propsobj.isDone,
         'icon-checkbox': true
-        // 'todoList__icon': true
       };
     },
     classMustIcon: function classMustIcon() {
@@ -494,7 +501,6 @@ _vue2.default.component('task-item', {
         'far false': !this.propsobj.isMust,
         'fa-star': true,
         'icon-star': true
-        // 'todoList__icon': true
       };
     },
     classSmallIcon: function classSmallIcon() {
@@ -502,7 +508,6 @@ _vue2.default.component('task-item', {
         'fas': true,
         'fa-stopwatch': true,
         'icon-stopwatch': true,
-        // 'todoList__icon': true,
         'true': this.propsobj.isSmall,
         'false': !this.propsobj.isSmall
       };
@@ -510,7 +515,6 @@ _vue2.default.component('task-item', {
     classTrashIcon: function classTrashIcon() {
       return {
         'fas fa-trash-alt icon-trash': true,
-        // 'todoList__icon': true,
         'true': this.propsobj.isRemoved,
         'false': !this.propsobj.isRemoved
       };
@@ -572,45 +576,16 @@ _vue2.default.component('task-item', {
 new _vue2.default({
   el: '#app',
   data: {
-    menuFlg: '',
-    onlyWillDo: true,
-    todos: [{
-      id: '0001',
-      taskName: '未完了のタスク',
-      isDone: false,
-      isMust: false,
-      isSmall: false,
-      isRemoved: false,
-      isShow: true
-    }, {
-      id: '0002',
-      taskName: '終わったタスク',
-      isDone: true,
-      isMust: false,
-      isSmall: false,
-      isRemoved: false,
-      isShow: true
-    }, {
-      id: '0003',
-      taskName: '未完了の大事なタスク',
-      isDone: false,
-      isMust: true,
-      isSmall: false,
-      isRemoved: false,
-      isShow: true
-    }, {
-      id: '0004',
-      taskName: '終わった大事なタスク',
-      isDone: true,
-      isMust: true,
-      isSmall: false,
-      isRemoved: false,
-      isShow: true
-    }]
+    menuFlg: 'ALL',
+    showDone: false,
+    showTrash: false,
+    isSearch: false,
+    todos: todoStorage.fetch(),
+    doneMessages: ['おつかれさま！', 'よくやった！', '最高！', 'この調子！', 'いいね！', 'Good job！']
   },
   computed: {
     classMenuAll: function classMenuAll() {
-      if (this.menuFlg === '') {
+      if (this.menuFlg === 'ALL') {
         return 'active';
       }
     },
@@ -625,57 +600,35 @@ new _vue2.default({
       }
     },
     todosMust: function todosMust() {
-      if (this.onlyWillDo) {
-        return this.todos.filter(function (todo) {
-          return todo.isMust && !todo.isDone && !todo.isRemoved;
-        });
-      } else {
-        return this.todos.filter(function (todo) {
-          return todo.isMust && !todo.isRemoved;
-        });
-      }
+      return this.todos.filter(function (todo) {
+        return todo.isMust && !todo.isDone && !todo.isRemoved;
+      });
     },
     todosSmall: function todosSmall() {
-      if (this.onlyWillDo) {
-        return this.todos.filter(function (todo) {
-          return todo.isSmall && !todo.isDone && !todo.isRemoved;
-        });
-      } else {
-        return this.todos.filter(function (todo) {
-          return todo.isSmall && !todo.isRemoved;
-        });
-      }
+      return this.todos.filter(function (todo) {
+        return todo.isSmall && !todo.isDone && !todo.isRemoved;
+      });
     },
     todosAll: function todosAll() {
-      if (this.onlyWillDo) {
-        return this.todos.filter(function (todo) {
-          return !todo.isDone && !todo.isRemoved;
-        });
-      } else {
-        return this.todos.filter(function (todo) {
-          return !todo.isRemoved;
-        });
-      }
+      return this.todos.filter(function (todo) {
+        return !todo.isDone && !todo.isRemoved;
+      });
+    },
+    todosDone: function todosDone() {
+      return this.todos.filter(function (todo) {
+        return todo.isDone && !todo.isRemoved;
+      });
     },
     todosTrash: function todosTrash() {
-      if (this.onlyWillDo) {
-        return this.todos.filter(function (todo) {
-          return !todo.isDone && todo.isRemoved;
-        });
-      } else {
-        return this.todos.filter(function (todo) {
-          return todo.isRemoved;
-        });
-      }
+      return this.todos.filter(function (todo) {
+        return todo.isRemoved;
+      });
     }
   },
 
   methods: {
-    toggleShow: function toggleShow() {
-      this.isShow = !this.isShow;
-    },
     showAll: function showAll() {
-      this.menuFlg = '';
+      this.menuFlg = 'ALL';
     },
     showMust: function showMust() {
       this.menuFlg = 'MUST';
@@ -683,15 +636,25 @@ new _vue2.default({
     showSmall: function showSmall() {
       this.menuFlg = 'SMALL';
     },
-    showDone: function showDone() {
-      this.onlyWillDo = false;
+    toggleTrash: function toggleTrash() {
+      this.showTrash = !this.showTrash;
     },
-    hideDone: function hideDone() {
-      this.onlyWillDo = true;
+    toggleDone: function toggleDone() {
+      this.showDone = !this.showDone;
     },
-    showTrash: function showTrash() {
-      this.menuFlg = 'TRASH';
+    showDoneMessage: function showDoneMessage() {
+      var num = Math.floor(Math.random() * this.doneMessages.length);
+      return this.doneMessages[num];
+    },
+    onSearch: function onSearch() {
+      this.isSearch = true;
+      console.log('isSearch');
+    },
+    offSearch: function offSearch() {
+      this.isSearch = false;
+      console.log('isn"tSearch');
     }
+
   },
 
   watch: {
