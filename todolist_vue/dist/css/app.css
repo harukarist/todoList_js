@@ -37,8 +37,6 @@ body {
   background: #0e2915;
   color: #BCBCBC;
   width: 100vw;
-  /* height: 100vh; */
-  /* min-height: 100vh; */
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -86,7 +84,6 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  /* background: #505050; */
   background: #201b1b;
   color: #A5A5A5;
   transition: .2s ease-in-out;
@@ -113,7 +110,6 @@ body {
   outline: none;
 }
 .entryBox__btn {
-  /* color: #C7C7C7; */
   color: #54615b;
   text-align: right;
   padding: 10px;
@@ -191,7 +187,6 @@ body {
   padding: 0;
   margin: 0;
   display: flex;
-  /* align-items: center; */
 }
 .todoMenu__item {
  width: calc(100% / 3);
@@ -217,7 +212,6 @@ body {
   margin-top: 10px;
   margin-bottom: 5px;
   font-size: 24px;
-  /* padding-right: 5px; */
 }
 
 /* Todoリスト */
@@ -315,7 +309,6 @@ body {
 
 .todoList__noneTask {
   padding: 15px;
-  /* text-align: center; */
 }
 
 .todoList__message {

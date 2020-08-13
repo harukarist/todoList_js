@@ -347,10 +347,8 @@ var todoStorage = {
     saveKeyDown: function saveKeyDown(e) {
       // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
       this.keyDownCode = e.keyCode;
-      console.log('keyDown', this.keyDownCode);
     },
     checkKeyUp: function checkKeyUp(e) {
-      console.log('keyUp', e.keyCode);
       // Enterキーが押された時（日本語入力確定後）
       if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
         this.addTask(e);
@@ -360,9 +358,7 @@ var todoStorage = {
     addTask: function addTask() {
       // v-modelの値を取得
       var text = this.newTask;
-      console.log('addTask', text);
       if (!text) {
-        console.log('err');
         this.errMsg = 'タスクを入力してください';
         return;
       } else {
@@ -378,7 +374,6 @@ var todoStorage = {
         });
         this.newTask = '';
         this.errMsg = '';
-        console.log('pushedArr', this.pushedArr);
         // 親コンポーネントに通知
         this.$emit('show-all');
       }
@@ -426,7 +421,6 @@ _vue2.default.component('task-search', {
       if (this.isShow) {
         this.searchVal = '';
         this.searchTasks();
-        console.log('this.searchVal', this.searchVal);
       }
       this.isShow = !this.isShow;
     },
@@ -434,20 +428,16 @@ _vue2.default.component('task-search', {
     filterTasks: function filterTasks(elm) {
       // 第二引数の'i'は「大文字・小文字を区別しない」オプション
       var regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i');
-      console.log('match()', elm.taskName.match(regexp));
       // 引数の各要素について、regexpとマッチするものだけ返す
       return elm.taskName.match(regexp);
     },
     searchTasks: function searchTasks() {
-      console.log('this.searchVal', this.searchVal);
       if (this.searchVal) {
         // data内で保存した最初の配列originalArrの各要素について、filter()で絞り込んで新しい配列を生成
         this.resultArr = this.originalArr.filter(this.filterTasks);
-        console.log('this.resultArr', this.resultArr);
         this.$emit('on-search-flg');
       } else {
         // 検索ボックスの値が削除されたら元の配列を表示
-        console.log('originalArr', this.originalArr);
         this.resultArr = this.originalArr;
         this.$emit('off-search-flg');
       }
@@ -547,10 +537,8 @@ _vue2.default.component('task-item', {
     saveKeyDown: function saveKeyDown(e) {
       // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
       this.keyDownCode = e.keyCode;
-      console.log('keyDown', this.keyDownCode);
     },
     checkKeyUp: function checkKeyUp(e) {
-      console.log('keyUp', e.keyCode);
       // Enterキーが押された時（日本語入力確定後）
       if (e.keyCode === 13) {
         // if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
@@ -562,7 +550,6 @@ _vue2.default.component('task-item', {
       var text = e.currentTarget.value;
       if (text) {
         this.localObj.taskName = text;
-        console.log('changeTask', text);
       }
       this.isEdit = false;
     },
@@ -648,11 +635,9 @@ new _vue2.default({
     },
     onSearch: function onSearch() {
       this.isSearch = true;
-      console.log('isSearch');
     },
     offSearch: function offSearch() {
       this.isSearch = false;
-      console.log('isn"tSearch');
     }
 
   },

@@ -67,10 +67,8 @@ Vue.component('todo-creator', {
     saveKeyDown: function (e) {
       // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
       this.keyDownCode = e.keyCode
-      console.log('keyDown', this.keyDownCode)
     },
     checkKeyUp: function (e) {
-      console.log('keyUp', e.keyCode)
       // Enterキーが押された時（日本語入力確定後）
       if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
         this.addTask(e)
@@ -80,9 +78,7 @@ Vue.component('todo-creator', {
     addTask: function () {
       // v-modelの値を取得
       let text = this.newTask
-      console.log('addTask', text)
       if (!text) {
-        console.log('err')
         this.errMsg = 'タスクを入力してください'
         return;
       } else {
@@ -98,7 +94,6 @@ Vue.component('todo-creator', {
         })
         this.newTask = ''
         this.errMsg = ''
-        console.log('pushedArr', this.pushedArr)
         // 親コンポーネントに通知
         this.$emit('show-all')
       }
@@ -157,7 +152,6 @@ Vue.component('task-search', {
       if (this.isShow) {
         this.searchVal = ''
         this.searchTasks()
-        console.log('this.searchVal', this.searchVal)
       }
       this.isShow = !this.isShow
     },
@@ -166,20 +160,16 @@ Vue.component('task-search', {
     filterTasks: function (elm) {
       // 第二引数の'i'は「大文字・小文字を区別しない」オプション
       const regexp = new RegExp('^(?=.*' + this.searchVal + ').*$', 'i')
-      console.log('match()', elm.taskName.match(regexp))
       // 引数の各要素について、regexpとマッチするものだけ返す
       return (elm.taskName.match(regexp))
     },
     searchTasks: function () {
-      console.log('this.searchVal', this.searchVal)
       if (this.searchVal) {
         // data内で保存した最初の配列originalArrの各要素について、filter()で絞り込んで新しい配列を生成
         this.resultArr = this.originalArr.filter(this.filterTasks)
-        console.log('this.resultArr', this.resultArr)
         this.$emit('on-search-flg')
       } else {
         // 検索ボックスの値が削除されたら元の配列を表示
-        console.log('originalArr', this.originalArr)
         this.resultArr = this.originalArr
         this.$emit('off-search-flg')
       }
@@ -299,10 +289,8 @@ Vue.component('task-item', {
     saveKeyDown: function (e) {
       // keydownの場合、日本語入力中のEnterはkeyCode = 229、確定後は13
       this.keyDownCode = e.keyCode
-      console.log('keyDown', this.keyDownCode)
     },
     checkKeyUp: function (e) {
-      console.log('keyUp', e.keyCode)
       // Enterキーが押された時（日本語入力確定後）
       if (e.keyCode === 13) {
         // if (e.keyCode === 13 && e.keyCode === this.keyDownCode) {
@@ -314,7 +302,6 @@ Vue.component('task-item', {
       let text = e.currentTarget.value
       if (text) {
         this.localObj.taskName = text
-        console.log('changeTask', text)
       }
       this.isEdit = false
     },
@@ -397,11 +384,9 @@ new Vue({
     },
     onSearch: function () {
       this.isSearch = true
-      console.log('isSearch')
     },
     offSearch: function () {
       this.isSearch = false
-      console.log('isn"tSearch')
     }
 
   },
