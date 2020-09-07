@@ -1,13 +1,12 @@
 {
   "extends": [
-    "plugin:react/recommended" // reactを書く用のおすすめの設定にしてくれるプラグインを読み込む
+    "plugin:react/recommended" //react用
   ],
   "parserOptions": {
-    "sourceType": "module" // import/exportを使うために設定
+    "sourceType": "module" // import、exportを使う
   },
   "env": {
-    "browser": true // ブラウザー用オブジェクト（documentオブジェクト）を使えるように
-    // 設定しないとdocument.xx を書くとエラーに
+    "browser": true // documentオブジェクトを使う
   },
   "plugins": [],
   "rules": {},

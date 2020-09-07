@@ -1,8 +1,3 @@
-//プラグインの読み込み
-// browserifyでファイル結合
-// browser-syncでブラウザリロード
-// vinyl-source-streamはgulpでbrowserifyを使うのに必要
-
 var gulp = require('gulp');
 var browserify = require('browserify');
 var browserSync = require('browser-sync').create();
@@ -32,7 +27,7 @@ gulp.task('bs-reload', function (done) {
   done();
 });
 
-// Gulpを使ったファイルの監視
+// ファイル監視
 gulp.task('default', gulp.series(gulp.parallel('build', 'browser-sync'), function (done) {
   gulp.watch('./src/*.js', gulp.task('build'));
   gulp.watch("./*.html", gulp.task('bs-reload'));

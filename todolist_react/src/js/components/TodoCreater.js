@@ -1,15 +1,10 @@
-// reactライブラリを読み込み
 import React from 'react';
-// react-reduxライブラリのconnectメソッドを読み込み
-import { connect } from 'react-redux'
-// actionsで作ったaddTaskメソッドを読み込み
-import { addTask } from '../actions'
-// prop-typesライブラリを読み込み
-import PropTypes from "prop-types";
+import { connect } from 'react-redux' //react-reduxライブラリのconnectメソッド
+import { addTask } from '../actions' //actionsで作ったaddTaskメソッド
+import PropTypes from "prop-types"; // prop-typesライブラリ
 
 // TodoCreatorコンポーネント
 class TodoCreator extends React.Component {
-  // コンストラクタ
   constructor(props) {
     super(props);
     this.state = {
@@ -19,7 +14,7 @@ class TodoCreator extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleKeyUp = this.handleKeyUp.bind(this);
   }
-  // 以前はTodoAppに書いていた乱数生成関数を移動【TODO】
+  // 乱数生成用の関数
   createHashId() {
     return Math.random().toString(36).slice(-16);
   }
@@ -31,7 +26,7 @@ class TodoCreator extends React.Component {
     });
   }
 
-  // Enterを２回押した時
+  // Enterが２回押された時
   handleKeyUp(e) {
     if (e.keyCode === 13 && e.KeyCode === prevKeyCode) {
       const inputVal = e.target.value;
@@ -58,37 +53,26 @@ class TodoCreator extends React.Component {
     let prevKeyCode = e.KeyCode;
   }
   render() {
+    // エラーメッセージ生成
     const errMsg = (this.state.errMsg) ? <span className="formArea__is-error">{this.state.errMsg}</span> : '';
     return (
+      // 入力フォームのDOM
       <div className="formArea">
         <div className="entryBox">
           <input type="text" className="entryBox__input" value={this.state.inputVal}
             onChange={this.handleChange} onKeyUp={this.handleKeyUp} placeholder="タスクを入力" />
-          {errMsg}
         </div>
+        {errMsg}
       </div>
     );
   }
 }
 
-// propの型を指定する
-// Reactの古いバージョン（ver14,15）ではコンポーネントの中で型を指定できたが
-// 今のバージョンではprop-typesライブラリを読み込む必要あり。
-
-// propsの中でどのようなデータが渡ってくるかわからないので、型を制限する。
-// （指定していない型が渡されたら自動的にエラーになる）
-
-// コンポーネントのクラス名.propTypesプロパティ = {}
-// {}のなかにオブジェクトの形でどのpropを渡して欲しいかを定義
-
+// prop-typesライブラリでpropsの型チェック
+// コンポーネントのクラス名.propTypesプロパティ = {必要なprops}
 TodoCreator.propTypes = {
   dispatch: PropTypes.func.isRequired
-  // dispatchを渡して欲しい
-  // PropTypes.
-  // dispatchはfunctionなので、funcの型で.
-  // 必ず必要なので、渡ってこなかったらエラーにするisRequired
 };
 
-
-// connect()(クラス名)はお決まりパターン
+// connect()(自身のクラス名) でReactコンポーネントをReduxのstoreに紐付け
 export default connect()(TodoCreator)

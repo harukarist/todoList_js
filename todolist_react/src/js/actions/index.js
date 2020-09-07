@@ -1,16 +1,12 @@
 // TaskのAction
-// storeの値を更新する際にコンポーネントやコンテナからdispatch()を使ってアクションを呼び出す
-// アクションはアプリケーションからの情報をstoreへ送る為のオブジェクト
-// 何を行なうものかを識別するために必ず"type"プロパティを持たせる。
+// storeを更新する際に、コンポーネントやコンテナからdispatch()を使って呼び出される。
+// reducerで何のアクションか判別できるよう、typeプロパティにアクション名を指定する。
 
 // Action Creator
-// アクションごとに「更新するstateと値」を定義
 export function addTask(id, text) {
-  // 変更する値のみを定義する
-  // ここで定義したプロパティがreducerへ渡される（一方向でデータを渡す）
-  return {
-    type: 'ADD', //アクション名（大文字にすると見やすい）
-    id: id,
+  return { // Action
+    type: 'ADD', //アクション名
+    id: id, //reducerへ渡す値
     taskName: text
   };
 }

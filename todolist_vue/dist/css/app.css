@@ -231,11 +231,8 @@ body {
   display: flex;
   align-items: center;
   position: relative;
-  /* transition: .2s ease-in-out transform; */
 }
 .todoList__item:hover {
-  /* transform: scale(1.02); */
-  /* color: #729e8a; */
   z-index: 2;
 }
 .todoList__item--done {

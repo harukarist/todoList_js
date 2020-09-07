@@ -7,9 +7,9 @@ import Vue from 'vue'
 var STORAGE_KEY = 'todos-vuejs'
 var todoStorage = {
   fetch: function () {
+    // ローカルストレージからデータを取得
     // JSON.parse()でJSON形式から配列に変換
     var todos = JSON.parse(
-      // ローカルストレージからデータを取得
       localStorage.getItem(STORAGE_KEY) || '[]'
     )
     todos.forEach(function (todo, index) {
@@ -31,7 +31,7 @@ Vue.component('todo-creator', {
   props: {
     propsarr: Array
   },
-  // props: ['propsarr'],
+  // 肩を指定しない場合は props: ['propsarr']
   data: function () {
     return {
       newTask: '',

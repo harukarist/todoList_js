@@ -4,27 +4,26 @@
 $('.js-add-todo').on('click', addTask);
 
 $('.js-form-val').keydown(function (e) {
-  // 押されたキーコードを保存
+  // keydown時のkeyCodeを保存
   keyDownCode = e.keyCode;
 });
 $('.js-form-val').keyup(function (e) {
-  // keyupもkeydownも13の場合(日本語入力確定後にEnterキーが押された場合)
-  // 日本語確定Enterのkeydownは229
+  // keyupもkeydownも13の場合(Enterのkeydownは日本語入力確定時は229,通常13)
   if (e.keyCode === 13 && e.keyCode === keyDownCode) {
     addTask();
   }
 });
 
 function addTask(e) {
-  // 入力フォームの値を取得して変数に格納し、中身を空にする
+  // 入力フォームの値を変数に格納し、入力フォームを空に
   var taskName = $('.js-form-val').val();
   $('.js-form-val').val('');
-  // 入力が空の場合は .show()でエラーメッセージを表示し、その後の処理を行わない
+  // 入力が空の場合はエラーメッセージを表示し、その後の処理を行わない
   if (!taskName) {
     $('.js-toggle-error').show();
     return;
   }
-  // タスクが入力されている場合は .hide()でエラーメッセージを隠す
+  // タスクが入力されている場合はエラーメッセージを隠す
   $('.js-toggle-error').hide();
 
   // リスト表示用のhtmlタグを生成
@@ -35,13 +34,13 @@ function addTask(e) {
     '<input type="text" class="todoList__editBox js-todoList-editName" value="' + taskName + '">' +
     '<i class="fas fa-trash-alt icon-trash js-click-to-remove" aria-hidden="true"></i>' +
     '</li>';
-  // ul要素のDOMを取得して、prepend()メソッドで子要素の先頭にリストを追加
+  // 通常リストの子要素の先頭にリストを追加
   $('.js-todoList-normal').prepend(listItem);
 
 }
 
 
-// 後から追加した要素も対象となるよう、$(document).on() でイベントを作る
+// 後から作成したDOMも対象となるよう、以降は$(document).on() でイベントを作る
 // -----------------------------------------
 // タスクを完了に変更
 $(document).on('click', '.js-click-to-done', function () {
@@ -59,11 +58,12 @@ $(document).on('click', '.js-click-to-todo', function () {
 });
 
 // -----------------------------------------
-// 通常の星アイコンをクリックしたら、重要アイコンに変更
+// 重要タスクに変更
 $(document).on('click', '.js-click-to-must', function () {
+  // 重要アイコンに変更
   $(this).removeClass('far').addClass('fas')
     .removeClass('js-click-to-must').addClass('js-click-to-normal');
-  // 親のli要素を取得してクラスを変更し、表示先のリストを移動
+  // 親のli要素を取得してクラスを変更し、重要リストに移動
   var $listItem = $(this).closest('.js-todoList-item');
   $listItem.animate(300, 'swing', function () {
     $listItem.addClass('todoList__item--must');
@@ -73,13 +73,13 @@ $(document).on('click', '.js-click-to-must', function () {
 
 });
 // -----------------------------------------
-// 重要アイコンをクリックしたら通常の星アイコンに変更
+// 通常タスクに変更
 $(document).on('click', '.js-click-to-normal', function () {
   // 通常アイコンに変更
   $(this).removeClass('fas').addClass('far')
     .removeClass('js-click-to-normal').addClass('js-click-to-must');
   // 
-  // 親のli要素を取得してクラスを変更し、表示先のリストを移動
+  // 親のli要素を取得してクラスを変更し、通常リストに移動
   var $listItem = $(this).closest('.js-todoList-item');
   $listItem.animate(300, 'swing', function () {
     $listItem.removeClass('todoList__item--must');
@@ -89,7 +89,7 @@ $(document).on('click', '.js-click-to-normal', function () {
 // -----------------------------------------
 // タスク削除
 $(document).on('click', '.js-click-to-remove', function () {
-  // .closest()で一番近い親のDOMを探し、remove()でリストを削除
+  // 一番近い親のDOMを探し、remove()でリストを削除
   $(this).closest('.js-todoList-item').fadeOut(300, 'swing', function () {
     this.remove();
   });
@@ -97,9 +97,8 @@ $(document).on('click', '.js-click-to-remove', function () {
 
 // -----------------------------------------
 // タスクの編集
-// タスク名がクリックされた時
 $(document).on('click', '.js-todoList-taskName', function () {
-  // タスク名thisをhide()で非表示にし、siblings()で兄弟要素の編集ボックスを探してshow()で表示
+  // タスク名のDOMを非表示にし、兄弟要素の編集ボックスを表示
   $(this).hide().siblings('.js-todoList-editName').show();
 });
 
@@ -111,12 +110,9 @@ $('.js-todoList-editName').blur(function () {
 
 var keyDownCode = 0;
 $(document).on('keydown', '.js-todoList-editName', function (e) {
-  // 押されたキーコードを保存
   keyDownCode = e.keyCode;
 });
 $(document).on('keyup', '.js-todoList-editName', function (e) {
-  // keyupもkeydownも13の場合(日本語入力確定後にEnterキーが押された場合)
-  // 日本語確定Enterのkeydownは229
   if (e.keyCode === 13 && e.keyCode === keyDownCode) {
     var $this = $(this);
     editTask($this);
@@ -124,8 +120,8 @@ $(document).on('keyup', '.js-todoList-editName', function (e) {
 });
 
 function editTask($this) {
-  // 編集ボックス$thisを非表示にし、siblings()で兄弟要素のタスク名を取得してtext()で入力された値に書き換えて表示
-  // closest()で親要素のlistItemを取得し、attr()でdata属性の値を入力された値に書き換え
+  // 編集ボックスを非表示にし、兄弟要素のタスク名DOMを入力された値に書き換えて表示
+  // 親要素のタスクを取得し、data属性の値を入力された値に書き換え
   $this.text($this.val()).hide().siblings('.js-todoList-taskName').text($this.val()).show()
     .closest('.js-todoList-item').attr('data-task-name', $this.val());
 };
@@ -136,21 +132,17 @@ function editTask($this) {
 $('.js-searchTasks').on('keyup', function () {
   var searchText = $(this).val();
 
-  // リストのDOMを全て取得してshow()で表示し、each()でDOMを1つずつ操作
-  // each(第一引数にインデックスi, 第二引数に取得した要素elm)
+  // リストのDOMを全て表示し、each()で1つずつ操作
   $('.js-todoList-item').show().each(function (i, elm) {
-    // data属性に格納されたタスク名を取得
+    // data属性のタスク名を取得
     var taskName = $(elm).data('taskName');
-    // 正規表現のオブジェクトを生成（部分一致）
+    // 入力された値から正規表現オブジェクトを生成（部分一致）
     var regexp = new RegExp('^(?=.*' + searchText + ').*$');
-    // var regexp = new RegExp('^' + searchText);
-
-    // match()で一致するかを判定
+    // DOMのタスク名と正規表現が一致したら次の要素へ
     if (taskName && taskName.match(regexp)) {
-      // 一致したらtrueを返して次の要素へ
       return true;
     }
-    // 一致しなかったらhide()でエレメントを非表示にする
+    // 一致しなかったらDOMを非表示に
     $(elm).hide();
   });
 

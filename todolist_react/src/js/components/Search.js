@@ -1,8 +1,6 @@
 import React from 'react';
-// react-reduxのconnectメソッドを読み込み
-import { connect } from 'react-redux'
-// actionのsearchTaskを読み込み
-import { searchTask } from '../actions'
+import { connect } from 'react-redux' // react-reduxのconnectメソッド
+import { searchTask } from '../actions' // actionのsearchTask
 import PropTypes from "prop-types";
 
 class Search extends React.Component {
@@ -34,11 +32,10 @@ class Search extends React.Component {
   }
 }
 
-// propの型を指定
+// propsの型チェック
 Search.propTypes = {
-  // 必ず受け取る
   dispatch: PropTypes.func.isRequired
 };
 
-// Reduxお決まり
+// connect()(自身のクラス名) でReactコンポーネントをReduxのstoreに紐付け
 export default connect()(Search)

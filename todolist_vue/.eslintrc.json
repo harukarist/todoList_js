@@ -1,12 +1,12 @@
 {
   "extends": [
-    "eslint:recommended" // 言語に合わせたおすすめ設定
+    "eslint:recommended" // 言語に合わせたおすすめの設定
   ],
   "parserOptions": {
-    "sourceType": "module" // import/exportを使うため
+    "sourceType": "module" // import、exportを使う
   },
   "env": {
-    "browser": true // ブラウザー用オブジェクト（documentオブジェクト）を使えるように
+    "browser": true // documentオブジェクトを使う
   },
   "plugins": [],
   "rules": {},

@@ -1,24 +1,18 @@
 import React from 'react';
-// コンポーネントを読み込み
-import VisibleTodoList from '../containers/VisibleTodoList';
-import TodoCreator from '../components/TodoCreater';
-import Search from '../components/Search';
-
-// VisibleTodoListもコンポーネントだが、役割が少し違う（stateのデータを加工する）ので、コンテナ扱い
-// componentsフォルダではなく containersフォルダに入れる
+import VisibleTodoList from '../containers/VisibleTodoList'; //stateのデータを加工するコンテナ
+import TodoCreator from '../components/TodoCreater'; //タスク作成コンポーネント
+import Search from '../components/Search'; //検索コンポーネント
 
 // TodoAppコンポーネント
 class TodoApp extends React.Component {
+  // コンストラクタ
   constructor(props) {
-    // 大元のReactのコンストラクタにpropsを渡す
-    super(props);
+    super(props); // Reactの大元のコンストラクタにpropsを渡す
   }
 
-  // renderで描画
   render() {
     return (
-      // JSXで書く場合は、必ず1つのタグで囲む
-      // コンポーネントを3つrender
+      // JSXでは必ず1つのタグで囲む必要があるため、divタグでコンポーネントを囲む
       <div>
         <TodoCreator />
         <Search />
@@ -28,6 +22,6 @@ class TodoApp extends React.Component {
   }
 }
 
-// export default で TodoAppクラスを外に渡す
+// 自身のクラスを外部に渡す
 export default TodoApp
 

@@ -710,18 +710,14 @@ exports.toggleDone = toggleDone;
 exports.toggleMust = toggleMust;
 exports.searchTask = searchTask;
 // TaskのAction
-// storeの値を更新する際にコンポーネントやコンテナからdispatch()を使ってアクションを呼び出す
-// アクションはアプリケーションからの情報をstoreへ送る為のオブジェクト
-// 何を行なうものかを識別するために必ず"type"プロパティを持たせる。
+// storeを更新する際に、コンポーネントやコンテナからdispatch()を使って呼び出される。
+// reducerで何のアクションか判別できるよう、typeプロパティにアクション名を指定する。
 
 // Action Creator
-// アクションごとに「更新するstateと値」を定義
 function addTask(id, text) {
-  // 変更する値のみを定義する
-  // ここで定義したプロパティがreducerへ渡される（一方向でデータを渡す）
-  return {
-    type: 'ADD', //アクション名（大文字にすると見やすい）
-    id: id,
+  return { // Action
+    type: 'ADD', //アクション名
+    id: id, //reducerへ渡す値
     taskName: text
   };
 }
@@ -1668,35 +1664,26 @@ var _reducers2 = _interopRequireDefault(_reducers);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
+//reducer
+
 // storeを生成
 // createStore()に大元のreducerを渡して、変数storeに入れる
-
-
-// コンポーネントを呼び出し
-
-// reduxのcreateStoreメソッド, react-reduxのProviderコンポーネントを
-// 以下で使用するので、{}で囲ってimportする
-// ライブラリを読み込み
+//react-reduxのProviderコンポーネント
 var store = (0, _redux.createStore)(_reducers2.default);
 
-// ReactDOMを使ってrender()する
-
-//reducerを呼び出し
+// react要素をコンテナのDOMにレンダリング
+//アプリの親コンポーネント
+//reduxのcreateStoreメソッド
 _reactDom2.default.render(
-// TodoAppでstoreのデータを使いたいので、react-reduxの Providerコンポーネント を作って
-// Providerタグの中にTodoAppコンポーネントを入れ、propsとしてstoreを渡す。
-
+// react-reduxのProviderコンポーネントの配下にアプリのコンポーネントを入れ、
+// propsとしてstoreを渡すことで、配下のコンポーネントでもstoreのデータやメソッドが使える。
+// reduxの共通メソッド、reducers内で作ったメソッドも全て渡される。
 _react2.default.createElement(
   _reactRedux.Provider,
   { store: store },
   _react2.default.createElement(_ToDoApp2.default, null)
-), document.getElementById('app') // index.html内の、<div id="app">の中に描画する
+), document.getElementById('app') // index.htmlのid="app"に描画
 );
-
-// Provider配下のコンポーネントに、storeのメソッド
-// store={dispatch(), getState(), subscribe(), ・・・} がpropsとして渡されるので
-// 配下のコンポーネントで使えるようになる。
-// ※reduxの共通メソッド、reducersの中で作ったメソッドも全て渡される
 
 /***/ }),
 /* 26 */
@@ -32527,33 +32514,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// コンポーネントを読み込み
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //stateのデータを加工するコンテナ
+//タスク作成コンポーネント
 
 
-// VisibleTodoListもコンポーネントだが、役割が少し違う（stateのデータを加工する）ので、コンテナ扱い
-// componentsフォルダではなく containersフォルダに入れる
+//検索コンポーネント
 
 // TodoAppコンポーネント
 var TodoApp = function (_React$Component) {
   _inherits(TodoApp, _React$Component);
 
+  // コンストラクタ
   function TodoApp(props) {
     _classCallCheck(this, TodoApp);
 
-    // 大元のReactのコンストラクタにpropsを渡す
-    return _possibleConstructorReturn(this, (TodoApp.__proto__ || Object.getPrototypeOf(TodoApp)).call(this, props));
+    return _possibleConstructorReturn(this, (TodoApp.__proto__ || Object.getPrototypeOf(TodoApp)).call(this, props)); // Reactの大元のコンストラクタにpropsを渡す
   }
-
-  // renderで描画
-
 
   _createClass(TodoApp, [{
     key: 'render',
     value: function render() {
       return (
-        // JSXで書く場合は、必ず1つのタグで囲む
-        // コンポーネントを3つrender
+        // JSXでは必ず1つのタグで囲む必要があるため、divタグでコンポーネントを囲む
         _react2.default.createElement(
           'div',
           null,
@@ -32568,7 +32550,7 @@ var TodoApp = function (_React$Component) {
   return TodoApp;
 }(_react2.default.Component);
 
-// export default で TodoAppクラスを外に渡す
+// 自身のクラスを外部に渡す
 
 
 exports.default = TodoApp;
@@ -32594,38 +32576,34 @@ var _TodoList2 = _interopRequireDefault(_TodoList);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// stateのデータを加工する時は、コンポーネントが肥大化しないよう、コンテナを作って間に噛ませてあげる
-// コンテナの中では一般的に
-// mapStateToProps
-// mapDispatchToProps　の2つが作られる
-// 中身は変わらないのでconstで定義する
+// TodoListコンポーネント
 
-// フィルター用の関数
+// stateのデータを加工する際は、コンポーネントが肥大化しないよう、コンテナを作って行う。
+// コンテナでは一般的に mapStateToProps、mapDispatchToProps の2つの変数を作る。
 
-// このcontainersで使うアクションを取り出し
+// 検索フィルタ用の関数
+// react-reduxのconnectメソッド
 var filterTasks = function filterTasks(elm) {
   // 第二引数の'i'は「大文字・小文字を区別しない」オプション
   var regexp = new RegExp('^(?=.*' + this.searchText + ').*$', 'i');
   return elm.taskName.match(regexp);
 };
 
-// 実際にフィルターする関数
-// 自動的にstateが渡ってくるので受け取ってアロー関数で処理をする
-
-// TodoListコンポーネントを読み込む
-// react-reduxのconnectメソッドを取り出し
+// タスク絞り込み用のメソッド
+// actionで定義したメソッド
 var mapStateToProps = function mapStateToProps(state) {
+  // 自動的に渡ってくるstateをアロー関数で処理
   return {
-    // 検索中の場合はfilter()で検索ワードにマッチするtodosだけを返す
-    // (state.reducer名.プロパティ)になるので注意！！
+    // 検索中の場合はfilter()で検索ワードにマッチするtodosだけを返し、そうでない場合はtodosをそのまま返す
     todos: state.task.searchText ? state.task.todos.filter(filterTasks, state.task) : state.task.todos
+    // (state.reducer名.プロパティ)になるので注意！
   };
 };
 
-// ディスパッチするためのメソッドを定義
+// ディスパッチ用のメソッド
 // propsに渡すdispatchを定義する
-// 自動的にdispatchが渡ってくるので受け取ってアロー関数で処理をする
 var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  // 自動的に渡ってくるdispatchをアロー関数で処理
   return {
     // オブジェクト型で
     // function名: プロパティ名 => {
@@ -32643,26 +32621,15 @@ var mapDispatchToProps = function mapDispatchToProps(dispatch) {
     onEnterUpdateTask: function onEnterUpdateTask(id, taskName) {
       dispatch((0, _actions.updateTask)(id, taskName));
     }
-    // TodoList.jsで取り出して使う
-
-    // コンポーネントやコンテナではdispatch()を呼ぶだけで終わり
-    // actionsで実際のアクションを定義し、reducersでstoreのstateを更新する
+    // TodoListコンポーネントでこれらのメソッドを取り出して使う。
+    // コンポーネントやコンテナではdispatch()を呼び出すのみ。
+    // 実際のアクションはactionsで定義。
   };
 };
 
-// TodoListコンポーネントへdispatch()やstateを渡すため、
-// connect()とマッピングをする
-
-// TodoListコンポーネントに propsとして stateとactionを渡す
+// connect()で TodoListコンポーネントに Reduxのstateやdispatch()を渡す
 exports.default = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps)(_TodoList2.default);
-
-// ここではconnect()に state,action が入る
-// connect(state, action)(コンポーネント名)
-//  ※ stateを直接propsとして渡す場合は
-//    connect(state => state)(コンポーネント名);
-//    そのコンポーネントにstateを流し込むことができる
-//    ＝そのコンポーネントのpropsでstateを直接使うことができる。
-//    ここでのstateはstoreの中のデータのこと。コンポーネントの中のstateではない。
+// connect(state, action)(渡し先のコンポーネント名)
 
 /***/ }),
 /* 69 */
@@ -32699,6 +32666,7 @@ function _possibleConstructorReturn(self, call) { if (!self) { throw new Referen
 
 function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 
+// TodoListコンポーネント
 var TodoList = function (_React$Component) {
   _inherits(TodoList, _React$Component);
 
@@ -32711,8 +32679,8 @@ var TodoList = function (_React$Component) {
   _createClass(TodoList, [{
     key: 'render',
     value: function render() {
-      // コンテナVisibleTodoListからpropsでメソッドが色々渡されるので、this.propsを変数に入れる
-      // 中カッコの中にイベント名の変数を入れる
+      // コンテナVisibleTodoListからpropsで値やメソッドを受け取るので、
+      // 変数todosとイベント名の変数に格納する（以降の処理で this.props.todosを todosと省略できる）
       var _props = this.props,
           todos = _props.todos,
           _onClickToggleDone = _props.onClickToggleDone,
@@ -32720,22 +32688,14 @@ var TodoList = function (_React$Component) {
           _onClickRemove = _props.onClickRemove,
           _onEnterUpdateTask = _props.onEnterUpdateTask;
 
-      // タスクのデータを格納する配列
+      // タスクデータを格納する配列
 
       var normalTasks = [];
       var mustTasks = [];
 
-      // todosはstoreにあったtodoのデータをpropsで受け取る
-      // 変わった後のタスクのデータはtodosに入る
-
       var _loop = function _loop(i) {
-        // 上記でthis.propsを変数に格納しているので、this.props.todos[i]と書く必要がなくなる
-        // [i]はインデックス番号
-        // 三点リーダーで{...todos[i]} とすると、todosの中身を全部展開して、Taskコンポーネントに全ての属性(id,isDone,taskName)を渡せる
-
-        // 上記でthis.propsを入れた変数をTaskコンポーネントにpropsで渡す
-        // {}にアロー関数を入れて、propsで取り出したメソッドをfunctionで渡す（引数としてタスクidやタスク名を渡す）
-
+        // this.propsを格納した変数をTaskコンポーネントに渡す
+        // ...todos[i]で配列を展開し、個々の要素にpropsで受け取ったメソッドを渡す
         var taskComponent = _react2.default.createElement(_Task2.default, _extends({ key: todos[i].id }, todos[i], {
           onClickToggleDone: function onClickToggleDone() {
             return _onClickToggleDone(todos[i].id);
@@ -32751,19 +32711,12 @@ var TodoList = function (_React$Component) {
           } }));
 
         if (!todos[i].isMust) {
-          console.log('normalTask:', todos[i].taskName);
+          // console.log('normalTask:', todos[i].taskName);
           normalTasks.push(taskComponent);
         } else {
-          console.log('mustTask:', todos[i].taskName);
+          // console.log('mustTask:', todos[i].taskName);
           mustTasks.push(taskComponent);
         }
-
-        // タスクの中でonClickToggleDoneを実行すると、実際はこのTodoListコンポーネントのpropsのonClickToggleDoneメソッドが実行され、引数としてタスクのIDが渡される
-
-        // Reduxなしだと
-        // tasks.push(<Task key={this.props.data[i].id}
-        //   id={this.props.data[i].id}
-        //   taskName={this.props.data[i].taskName} onRemove={this.handleRemove} />);
       };
 
       for (var i in todos) {
@@ -32794,13 +32747,11 @@ var TodoList = function (_React$Component) {
 
 
 TodoList.propTypes = {
-  todos: _propTypes2.default.arrayOf(
-  // .shape()は、形式を指定するもの
-  _propTypes2.default.shape({
-    id: _propTypes2.default.string.isRequired, //string型
-    isDone: _propTypes2.default.bool.isRequired, //boolean型
-    isMust: _propTypes2.default.bool.isRequired, //boolean型
-    taskName: _propTypes2.default.string.isRequired //string型
+  todos: _propTypes2.default.arrayOf(_propTypes2.default.shape({ // .shape()で形式を指定
+    id: _propTypes2.default.string.isRequired,
+    isDone: _propTypes2.default.bool.isRequired,
+    isMust: _propTypes2.default.bool.isRequired,
+    taskName: _propTypes2.default.string.isRequired
   }).isRequired).isRequired,
   onClickToggleDone: _propTypes2.default.func.isRequired,
   onClickToggleMust: _propTypes2.default.func.isRequired,
@@ -32808,9 +32759,8 @@ TodoList.propTypes = {
   onEnterUpdateTask: _propTypes2.default.func.isRequired
 };
 
-// コンテナ VisibleTodoList の中でTodoListを読み込むため、
-// TodoListではconnect()は使わない
 exports.default = TodoList;
+// containers/VisibleTodoList の中でTodoListを読み込むため、ここではconnect()は不要
 
 /***/ }),
 /* 70 */
@@ -32843,11 +32793,13 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // react,prop-types,classnames読み込み
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //propsの型チェック
 
+
+//cssクラスを生成
 
 // Taskコンポーネント
-// 親のTodoListコンポーネントから受け取った「propsのコールバック関数」を実行する
+// 親のTodoListコンポーネントから受け取った、propsのコールバック関数を実行
 var Task = function (_React$Component) {
   _inherits(Task, _React$Component);
 
@@ -32884,49 +32836,48 @@ var Task = function (_React$Component) {
   }, {
     key: 'handleKeyUpCloseEdit',
     value: function handleKeyUpCloseEdit(e) {
-      if (e.keyCode === 13 && e.keyCode === prevKeyCode) {
+      if (e.keyCode === 13) {
         this.setState({
           taskName: e.currentTarget.value,
           isEdit: false
         });
-        // propsで受け取ったTodoList.jsのメソッド（コンテナから渡ってきたもの）を実行
-        // dispatch()でIDとタスク名をアクションに通知する
+        // propsで受け取ったコンテナのメソッドを実行
         this.props.onEnterUpdateTask(e.currentTarget.value);
-        // Reduxで自動的に連携してくれる
+        // コンテナのdispatch()でIDとタスク名がアクションに通知される（Reduxで自動連携）
       }
-      var prevKeyCode = e.keyCode;
     }
   }, {
     key: 'render',
     value: function render() {
-      // propsとして受け取ったものを変数として展開
-      // this.props.onClickToggleDone と同じ
+      // propsをイベント名の変数に格納
       var _props = this.props,
           onClickToggleDone = _props.onClickToggleDone,
           onClickToggleMust = _props.onClickToggleMust,
           onClickRemove = _props.onClickRemove;
 
+      // classnamesライブラリでcssクラスを生成
 
-      var classNameLi = (0, _classnames2.default)({
+      var taskClass = (0, _classnames2.default)({
         'todoList__item': true,
         'todoList__item--done': this.props.isDone,
         'todoList__item--must': this.props.isMust
       });
-      var classNameCheckIcon = (0, _classnames2.default)({
+      var checkIconClass = (0, _classnames2.default)({
         'far': true,
         'fa-square': !this.props.isDone,
         'fa-check-square': this.props.isDone,
         'icon-checkbox': true
       });
-      var classNameMustIcon = (0, _classnames2.default)({
+      var mustIconClass = (0, _classnames2.default)({
         'fas': this.props.isMust,
         'far': !this.props.isMust,
         'fa-star': true,
         'icon-star': true
       });
 
+      // 編集中の場合は編集ボックス、そうでない場合はタスク名表示のDOMを格納
       var taskContent = this.state.isEdit ? _react2.default.createElement('input', { type: 'text', className: 'todoList__editBox', value: this.state.taskName,
-        onChange: this.handleChangeName, onKeyUp: this.handleKeyUpCloseEdit }) : _react2.default.createElement(
+        onChange: this.handleChangeName, onKeyDown: this.handleKeyUpCloseEdit }) : _react2.default.createElement(
         'span',
         { className: 'todoList__taskName', onClick: this.handleClickShowEdit },
         this.state.taskName
@@ -32934,10 +32885,10 @@ var Task = function (_React$Component) {
 
       return _react2.default.createElement(
         'li',
-        { className: classNameLi },
-        _react2.default.createElement('i', { className: classNameCheckIcon, onClick: onClickToggleDone, 'aria-hidden': 'true' }),
+        { className: taskClass },
+        _react2.default.createElement('i', { className: checkIconClass, onClick: onClickToggleDone, 'aria-hidden': 'true' }),
         taskContent,
-        _react2.default.createElement('i', { className: classNameMustIcon, onClick: onClickToggleMust, 'aria-hidden': 'true' }),
+        _react2.default.createElement('i', { className: mustIconClass, onClick: onClickToggleMust, 'aria-hidden': 'true' }),
         _react2.default.createElement('i', { className: 'fas fa-trash-alt icon-trash', onClick: onClickRemove, 'aria-hidden': 'true' })
       );
     }
@@ -32946,7 +32897,7 @@ var Task = function (_React$Component) {
   return Task;
 }(_react2.default.Component);
 
-// propの型を指定
+// propsの型チェック
 
 
 Task.propTypes = {
@@ -32960,9 +32911,8 @@ Task.propTypes = {
   onClickRemove: _propTypes2.default.func.isRequired
 };
 
-// Taskではstoreやdispatch()を使わないので、connect()をつけなくてOK
-// 親から渡されたメソッドを呼んでるだけ
 exports.default = Task;
+// Reduxのstoreやdispatch()を使わないのでconnect()は不要
 
 /***/ }),
 /* 71 */
@@ -33054,20 +33004,16 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // reactライブラリを読み込み
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } //react-reduxライブラリのconnectメソッド
+//actionsで作ったaddTaskメソッド
 
-// react-reduxライブラリのconnectメソッドを読み込み
 
-// actionsで作ったaddTaskメソッドを読み込み
-
-// prop-typesライブラリを読み込み
-
+// prop-typesライブラリ
 
 // TodoCreatorコンポーネント
 var TodoCreator = function (_React$Component) {
   _inherits(TodoCreator, _React$Component);
 
-  // コンストラクタ
   function TodoCreator(props) {
     _classCallCheck(this, TodoCreator);
 
@@ -33081,7 +33027,7 @@ var TodoCreator = function (_React$Component) {
     _this.handleKeyUp = _this.handleKeyUp.bind(_this);
     return _this;
   }
-  // 以前はTodoAppに書いていた乱数生成関数を移動【TODO】
+  // 乱数生成用の関数
 
 
   _createClass(TodoCreator, [{
@@ -33100,7 +33046,7 @@ var TodoCreator = function (_React$Component) {
       });
     }
 
-    // Enterを２回押した時
+    // Enterが２回押された時
 
   }, {
     key: 'handleKeyUp',
@@ -33132,19 +33078,23 @@ var TodoCreator = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
+      // エラーメッセージ生成
       var errMsg = this.state.errMsg ? _react2.default.createElement(
         'span',
         { className: 'formArea__is-error' },
         this.state.errMsg
       ) : '';
-      return _react2.default.createElement(
-        'div',
-        { className: 'formArea' },
+      return (
+        // 入力フォームのDOM
         _react2.default.createElement(
           'div',
-          { className: 'entryBox' },
-          _react2.default.createElement('input', { type: 'text', className: 'entryBox__input', value: this.state.inputVal,
-            onChange: this.handleChange, onKeyUp: this.handleKeyUp, placeholder: '\u30BF\u30B9\u30AF\u3092\u5165\u529B' }),
+          { className: 'formArea' },
+          _react2.default.createElement(
+            'div',
+            { className: 'entryBox' },
+            _react2.default.createElement('input', { type: 'text', className: 'entryBox__input', value: this.state.inputVal,
+              onChange: this.handleChange, onKeyUp: this.handleKeyUp, placeholder: '\u30BF\u30B9\u30AF\u3092\u5165\u529B' })
+          ),
           errMsg
         )
       );
@@ -33154,25 +33104,15 @@ var TodoCreator = function (_React$Component) {
   return TodoCreator;
 }(_react2.default.Component);
 
-// propの型を指定する
-// Reactの古いバージョン（ver14,15）ではコンポーネントの中で型を指定できたが
-// 今のバージョンではprop-typesライブラリを読み込む必要あり。
+// prop-typesライブラリでpropsの型チェック
+// コンポーネントのクラス名.propTypesプロパティ = {必要なprops}
 
-// propsの中でどのようなデータが渡ってくるかわからないので、型を制限する。
-// （指定していない型が渡されたら自動的にエラーになる）
-
-// コンポーネントのクラス名.propTypesプロパティ = {}
-// {}のなかにオブジェクトの形でどのpropを渡して欲しいかを定義
 
 TodoCreator.propTypes = {
   dispatch: _propTypes2.default.func.isRequired
-  // dispatchを渡して欲しい
-  // PropTypes.
-  // dispatchはfunctionなので、funcの型で.
-  // 必ず必要なので、渡ってこなかったらエラーにするisRequired
 };
 
-// connect()(クラス名)はお決まりパターン
+// connect()(自身のクラス名) でReactコンポーネントをReduxのstoreに紐付け
 exports.default = (0, _reactRedux.connect)()(TodoCreator);
 
 /***/ }),
@@ -33206,10 +33146,8 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
-// react-reduxのconnectメソッドを読み込み
-
-// actionのsearchTaskを読み込み
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // react-reduxのconnectメソッド
+// actionのsearchTask
 
 
 var Search = function (_React$Component) {
@@ -33256,15 +33194,14 @@ var Search = function (_React$Component) {
   return Search;
 }(_react2.default.Component);
 
-// propの型を指定
+// propsの型チェック
 
 
 Search.propTypes = {
-  // 必ず受け取る
   dispatch: _propTypes2.default.func.isRequired
 };
 
-// Reduxお決まり
+// connect()(自身のクラス名) でReactコンポーネントをReduxのstoreに紐付け
 exports.default = (0, _reactRedux.connect)()(Search);
 
 /***/ }),
@@ -33286,21 +33223,17 @@ var _Task2 = _interopRequireDefault(_Task);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-// reducerを結合する
-/**
- * reducerは、actionを受けてstateを変更する為のメソッド
- * 大元のrootReducerを作って、他のreducerを結合することが一般的
- */
+// 子のreducer
 
-//  reduxライブラリのcombineReducersメソッドを取り出す
+// 子のreducerを結合する
 var reducer = (0, _redux.combineReducers)({
   task: _Task2.default
-  // 複数ある場合は
-  // task1,
   // task2,
   // task3
 });
-// 他のreducerをimportで読み込む
+
+// export
+//  reduxライブラリのcombineReducersメソッド
 exports.default = reducer;
 
 /***/ }),
@@ -33321,21 +33254,14 @@ var _lodash2 = _interopRequireDefault(_lodash);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } /**
-                                                                                                                                                                                                     * Taskのreducer
-                                                                                                                                                                                                     * reducerは、「受けとったactionのtypeをもとに、storeに新しいstateを返す」だけのもの
-                                                                                                                                                                                                     * reducerの中で下記のことはやってはダメ
-                                                                                                                                                                                                     * ・引数のstate, actionインスタンスの値を変更するのはNG
-                                                                                                                                                                                                     * ・副作用をおこす可能性のあるもの(AjaxでAPIを呼んだり、ルーティングを変えるなど,確実に実行されるかわからない事)はNG
-                                                                                                                                                                                                     * ・毎回値が変わるもの(Date.now() や Math.random())を扱うのはNG
-                                                                                                                                                                                                     */
-
-//  lodashを読み込み
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } } // --------------------------------------
+// タスクのreducer
 
 
-// stateの初期値を設定
+//lodashでタスク削除
+
+// stateに渡す初期値を指定
 var initialState = {
-  // storeの中で管理するデータ（コレクション形式）
   todos: [{
     id: '0001',
     taskName: '未完了のタスク',
@@ -33360,61 +33286,48 @@ var initialState = {
   searchText: ''
 };
 
-// reducer
-// actionから受け取った値を state に適用する
-// returnで返却するstateと,Storeの元のstateに差分があれば、アップデートする
-// ⇒componentで再描画される
-
-// reducer名 ＝ stateの名前 になる
-// function名はファイル名と同じにするのが通例
+// reducerでactionから値を受け取り、typeを判別してstateに適用し、storeへ渡す
+// returnで返却するstateとstoreの元のstateに差分があれば更新（componentで再描画される）
+// reducer名 ＝ state名
 
 function task() {
   var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : initialState;
   var action = arguments[1];
 
-  // 引数stateの初期値として、上記で作成した変数initialStateを指定
-  // storeに保管されている直前のデータがstateに入っているので、
-  // 以下の処理で最新のデータを追加する
+  // 引数stateの初期値として上記で作成したinitialStateを指定し、第二引数でactionを受け取る
+  // storeに保管されている直前のデータがstateに入っているため、以下の処理で最新のデータを追加
 
-  // 第二引数でactionを受け取る
-
-  // actionから渡されたtypeの種類によって、switch文で処理を分ける
+  // actionから渡されたtypeの種類によって処理を分岐
   switch (action.type) {
     case 'ADD':
       return {
         todos: [].concat(_toConsumableArray(state.todos), [{
-          id: action.id, //actionで定義したidプロパティの値を取得
-          taskName: action.taskName, //actionで定義したtaskNameプロパティの値を取得
+          id: action.id, //actionで定義したid
+          taskName: action.taskName, //actionで定義したtaskName
           isDone: false,
           isMust: false
         }])
       };
 
     case 'DELETE':
-      // Object.assign()で新しいオブジェクトを生成
-      // データをDeleteした後のtodosを、空オブジェクト・元のstateとマージ
+      // Object.assign()で空オブジェクトに元のstate,データ削除後のtodosをマージ
+      // stateに差分がないと更新されないため、空のオブジェクト{}にマージして新しいオブジェクトを生成する
       return Object.assign({}, state, {
         todos: _lodash2.default.reject(state.todos, { 'id': action.id })
-        // lodashのメソッド _.reject()で、actionから渡されたidのものを
-        // stateのtodosの中から見つけて除き、残ったデータをtodosに入れる。
+        // lodashのreject()で、actionから渡されたidの要素をstate.todosから除く
       });
 
     case 'UPDATE':
       return Object.assign({}, state, {
-        // todoをまとめたオブジェクトtodosを、stateと空オブジェクトとマージ
         todos: state.todos.map(function (todo) {
-          // state.todosはコレクション（配列）なのでmap()が使える。
-          // map()にはfunctionが渡せるので、アロー関数でtodosに入っている配列文を実行してループ。
+          // map()にアロー関数を渡し、個々のtodoのidとactionから受け取ったidが同じかを判定
+          // idが同じならtaskNameを書き換えて、元のtodo、空オブジェクトとマージ
           if (todo.id === action.id) {
-            // 自動的に個々のtodoのデータが入ってくるのでtodoのidとactionで受け取ったidが同じかを判定
-            // IDが同じなら、差分ありと認識させるために新しいオブジェクトを生成する
             return Object.assign({}, todo, {
               taskName: action.taskName
-              // taskNameを書き換えて、現在のtodoオブジェクトと空オブジェクトとマージする
-              // →todoのtaskNameがaction.taskNameに上書きされる
             });
           }
-          // idが同じでなければ何もせずtodoのデータをそのまま返す
+          // idが異なる場合はtodoをそのまま返す
           return todo;
         })
       });
@@ -33423,12 +33336,11 @@ function task() {
       return Object.assign({}, state, {
         todos: state.todos.map(function (todo) {
           if (todo.id === action.id) {
-            // idが同じならtodoのisDoneを反転して新しいオブジェクトを生成
+            // idが同じならtodoのisDoneを反転してマージ
             return Object.assign({}, todo, {
               isDone: !todo.isDone
             });
           }
-          // idが同じでなければそのままtodoを返す
           return todo;
         })
       });
@@ -33437,20 +33349,18 @@ function task() {
       return Object.assign({}, state, {
         todos: state.todos.map(function (todo) {
           if (todo.id === action.id) {
-            // idが同じならtodoのisMustを反転して新しいオブジェクトを生成
+            // idが同じならtodoのisMustを反転してマージ
             return Object.assign({}, todo, {
               isMust: !todo.isMust
             });
           }
-          // idが同じでなければそのままtodoを返す
           return todo;
         })
       });
 
     case 'SEARCH':
+      // searchTextを書き換えて、元のstate、空オブジェクトとマージ
       return Object.assign({}, state, { 'searchText': action.searchText });
-    // jsのObject.assign()を使ってオブジェクトをマージ（結合）する
-    // stateに差分がないと更新されないため、空のオブジェクト{}, storeに入っているstate, 新しくactionから渡ってきたsearchTextをtodosの'searchText'に入れたもの を結合して新しいオブジェクトを生成する
 
     default:
       return state;

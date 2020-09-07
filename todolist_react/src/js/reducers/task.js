@@ -1,18 +1,9 @@
-/**
- * Taskのreducer
- * reducerは、「受けとったactionのtypeをもとに、storeに新しいstateを返す」だけのもの
- * reducerの中で下記のことはやってはダメ
- * ・引数のstate, actionインスタンスの値を変更するのはNG
- * ・副作用をおこす可能性のあるもの(AjaxでAPIを呼んだり、ルーティングを変えるなど,確実に実行されるかわからない事)はNG
- * ・毎回値が変わるもの(Date.now() や Math.random())を扱うのはNG
- */
+// --------------------------------------
+// タスクのreducer
+import _ from 'lodash'; //lodashでタスク削除
 
-//  lodashを読み込み
-import _ from 'lodash';
-
-// stateの初期値を設定
+// stateに渡す初期値を指定
 const initialState = {
-  // storeの中で管理するデータ（コレクション形式）
   todos: [
     {
       id: '0001',
@@ -42,31 +33,24 @@ const initialState = {
   searchText: ''
 };
 
-// reducer
-// actionから受け取った値を state に適用する
-// returnで返却するstateと,Storeの元のstateに差分があれば、アップデートする
-// ⇒componentで再描画される
-
-// reducer名 ＝ stateの名前 になる
-// function名はファイル名と同じにするのが通例
+// reducerでactionから値を受け取り、typeを判別してstateに適用し、storeへ渡す
+// returnで返却するstateとstoreの元のstateに差分があれば更新（componentで再描画される）
+// reducer名 ＝ state名
 
 export default function task(state = initialState, action) {
-  // 引数stateの初期値として、上記で作成した変数initialStateを指定
-  // storeに保管されている直前のデータがstateに入っているので、
-  // 以下の処理で最新のデータを追加する
+  // 引数stateの初期値として上記で作成したinitialStateを指定し、第二引数でactionを受け取る
+  // storeに保管されている直前のデータがstateに入っているため、以下の処理で最新のデータを追加
 
-  // 第二引数でactionを受け取る
-
-  // actionから渡されたtypeの種類によって、switch文で処理を分ける
+  // actionから渡されたtypeの種類によって処理を分岐
   switch (action.type) {
     case 'ADD':
       return {
         todos: [
-          // オブジェクトの配列を展開して1つ1つの要素の値を変更する
+          // オブジェクトの配列を展開して個々の要素の値を変更
           ...state.todos,
           {
-            id: action.id, //actionで定義したidプロパティの値を取得
-            taskName: action.taskName, //actionで定義したtaskNameプロパティの値を取得
+            id: action.id, //actionで定義したid
+            taskName: action.taskName, //actionで定義したtaskName
             isDone: false,
             isMust: false
           }
@@ -74,30 +58,24 @@ export default function task(state = initialState, action) {
       };
 
     case 'DELETE':
-      // Object.assign()で新しいオブジェクトを生成
-      // データをDeleteした後のtodosを、空オブジェクト・元のstateとマージ
+      // Object.assign()で空オブジェクトに元のstate,データ削除後のtodosをマージ
+      // stateに差分がないと更新されないため、空のオブジェクト{}にマージして新しいオブジェクトを生成する
       return Object.assign({}, state, {
         todos: _.reject(state.todos, { 'id': action.id })
-        // lodashのメソッド _.reject()で、actionから渡されたidのものを
-        // stateのtodosの中から見つけて除き、残ったデータをtodosに入れる。
+        // lodashのreject()で、actionから渡されたidの要素をstate.todosから除く
       });
 
     case 'UPDATE':
       return Object.assign({}, state, {
-        // todoをまとめたオブジェクトtodosを、stateと空オブジェクトとマージ
         todos: state.todos.map((todo) => {
-          // state.todosはコレクション（配列）なのでmap()が使える。
-          // map()にはfunctionが渡せるので、アロー関数でtodosに入っている配列文を実行してループ。
+          // map()にアロー関数を渡し、個々のtodoのidとactionから受け取ったidが同じかを判定
+          // idが同じならtaskNameを書き換えて、元のtodo、空オブジェクトとマージ
           if (todo.id === action.id) {
-            // 自動的に個々のtodoのデータが入ってくるのでtodoのidとactionで受け取ったidが同じかを判定
-            // IDが同じなら、差分ありと認識させるために新しいオブジェクトを生成する
             return Object.assign({}, todo, {
               taskName: action.taskName
-              // taskNameを書き換えて、現在のtodoオブジェクトと空オブジェクトとマージする
-              // →todoのtaskNameがaction.taskNameに上書きされる
             })
           }
-          // idが同じでなければ何もせずtodoのデータをそのまま返す
+          // idが異なる場合はtodoをそのまま返す
           return todo
         })
       });
@@ -106,12 +84,11 @@ export default function task(state = initialState, action) {
       return Object.assign({}, state, {
         todos: state.todos.map((todo) => {
           if (todo.id === action.id) {
-            // idが同じならtodoのisDoneを反転して新しいオブジェクトを生成
+            // idが同じならtodoのisDoneを反転してマージ
             return Object.assign({}, todo, {
               isDone: !todo.isDone
             })
           }
-          // idが同じでなければそのままtodoを返す
           return todo
         })
       });
@@ -120,20 +97,18 @@ export default function task(state = initialState, action) {
       return Object.assign({}, state, {
         todos: state.todos.map((todo) => {
           if (todo.id === action.id) {
-            // idが同じならtodoのisMustを反転して新しいオブジェクトを生成
+            // idが同じならtodoのisMustを反転してマージ
             return Object.assign({}, todo, {
               isMust: !todo.isMust
             })
           }
-          // idが同じでなければそのままtodoを返す
           return todo
         })
       });
 
     case 'SEARCH':
+      // searchTextを書き換えて、元のstate、空オブジェクトとマージ
       return Object.assign({}, state, { 'searchText': action.searchText });
-    // jsのObject.assign()を使ってオブジェクトをマージ（結合）する
-    // stateに差分がないと更新されないため、空のオブジェクト{}, storeに入っているstate, 新しくactionから渡ってきたsearchTextをtodosの'searchText'に入れたもの を結合して新しいオブジェクトを生成する
 
     default:
       return state;
